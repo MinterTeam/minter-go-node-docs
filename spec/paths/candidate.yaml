@@ -2,20 +2,23 @@ get:
   summary: Get information about candidate
   description: ''
   operationId: candidate
-  produces:
-    - application/json
   parameters:
     - name: pubkey
       in: query
       description: Public key of a candidate
       required: true
-      type: string
+      schema:
+        type: string
     - name: height
       in: query
       description: Specify height
       required: false
-      type: string
+      schema:
+        type: string
   responses:
     '200':
-      schema:
-        $ref: '#/definitions/CandidateResponse'
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CandidateResponse'

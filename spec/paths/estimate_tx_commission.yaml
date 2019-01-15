@@ -2,15 +2,17 @@ get:
   summary: Estimate tx commission
   description: ''
   operationId: estimate_tx_commission
-  produces:
-    - application/json
   parameters:
     - name: tx
       in: query
       description: Raw transaction
       required: true
-      type: string
+      schema:
+        type: string
   responses:
     '200':
-      schema:
-        $ref: '#/definitions/EstimateTxCommissionResponse'
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EstimateTxCommissionResponse'

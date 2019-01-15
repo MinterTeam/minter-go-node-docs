@@ -2,20 +2,23 @@ get:
   summary: Get information about coin
   description: ''
   operationId: coin
-  produces:
-    - application/json
   parameters:
     - name: symbol
       in: query
       description: Coin symbol
       required: true
-      type: string
+      schema:
+        type: string
     - name: height
       in: query
       description: Specify height
       required: false
-      type: string
+      schema:
+        type: string
   responses:
     '200':
-      schema:
-        $ref: '#/definitions/CoinInfoResponse'
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CoinInfoResponse'

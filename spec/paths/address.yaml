@@ -2,20 +2,23 @@ get:
   summary: Get balance and transaction count of given address
   description: ''
   operationId: address
-  produces:
-    - application/json
   parameters:
     - name: address
       in: query
       description: 'Minter Address, starts with Mx...'
       required: true
-      type: string
+      schema:
+        type: string
     - name: height
       in: query
       description: Specify height
       required: false
-      type: string
+      schema:
+        type: string
   responses:
     '200':
-      schema:
-        $ref: '#/definitions/AddressResponse'
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AddressResponse'

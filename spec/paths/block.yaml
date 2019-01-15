@@ -2,15 +2,17 @@ get:
   summary: Get information about given block
   description: ''
   operationId: block
-  produces:
-    - application/json
   parameters:
     - name: height
       in: query
       description: Block height
       required: true
-      type: integer
+      schema:
+        type: string
   responses:
     '200':
-      schema:
-        $ref: '#/definitions/BlockResponse'
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BlockResponse'
