@@ -1,0 +1,16 @@
+get:
+  summary: Get information about candidates
+  description: ''
+  operationId: candidates
+  produces:
+    - application/json
+  parameters:
+    - name: height
+      in: query
+      description: Specify height
+      required: false
+      type: string
+  responses:
+    '200':
+      schema:
+        $ref: '#/definitions/CandidatesResponse'

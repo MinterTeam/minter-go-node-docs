@@ -1,0 +1,8 @@
+type: object
+properties:
+  will_pay:
+    type: string
+    example: '209369045801925559657593'
+  commission:
+    type: string
+    example: '209369045801925559657593'

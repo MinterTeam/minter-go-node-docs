@@ -1,0 +1,31 @@
+get:
+  summary: Estimate BuyCoin operation
+  description: ''
+  operationId: estimate_coin_buy
+  produces:
+    - application/json
+  parameters:
+    - name: coin_to_sell
+      in: query
+      description: Coin symbol to sell
+      required: true
+      type: string
+    - name: coin_to_buy
+      in: query
+      description: Coin symbol to buy
+      required: true
+      type: string
+    - name: value_to_buy
+      in: query
+      description: Value to buy
+      required: true
+      type: string
+    - name: height
+      in: query
+      description: Specify height
+      required: false
+      type: string
+  responses:
+    '200':
+      schema:
+        $ref: '#/definitions/EstimateCoinBuyResponse'

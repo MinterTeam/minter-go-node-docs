@@ -1,0 +1,65 @@
+type: object
+properties:
+  jsonrpc:
+    type: string
+    example: '2.0'
+  id:
+    type: string
+    example: ''
+  result:
+    type: object
+    properties:
+      hash:
+        type: string
+        example: 129ABDC2A6396C38D4FF60DFE2850E8A88046744FDBA9B76ABFA752A11F16AA1
+      height:
+        type: string
+        example: '1'
+      time:
+        type: string
+        example: '2018-12-24T13:04:19.45937898Z'
+      num_txs:
+        type: string
+        example: '1'
+      total_txs:
+        type: string
+        example: '1'
+      transactions:
+        type: array
+        items:
+          anyOf:
+            - $ref: '#/definitions/SendTx'
+            - $ref: '#/definitions/SellCoinTx'
+            - $ref: '#/definitions/SellAllCoinTx'
+            - $ref: '#/definitions/BuyCoinTx'
+            - $ref: '#/definitions/CreateCoinTx'
+            - $ref: '#/definitions/DeclareCandidacyTx'
+            - $ref: '#/definitions/DelegateTx'
+            - $ref: '#/definitions/UnbondTx'
+            - $ref: '#/definitions/RedeemCheckTx'
+            - $ref: '#/definitions/SetCandidateOffTx'
+            - $ref: '#/definitions/SetCandidateOnTx'
+            - $ref: '#/definitions/CreateMultisigTx'
+            - $ref: '#/definitions/MultisendTx'
+            - $ref: '#/definitions/EditCandidateTx'
+      block_reward:
+        type: string
+        example: '333000000000000000000'
+      size:
+        type: string
+        example: '1352'
+      proposer:
+        type: string
+        example: Mp4ae1ee73e6136c85b0ca933a9a1347758a334885f10b3238398a67ac2eb153b8
+      validators:
+        type: array
+        items:
+          type: object
+          properties:
+            pubkey:
+              type: string
+              example: >-
+                Mp738da41ba6a7b7d69b7294afa158b89c5a1b410cbf0c2443c85c5fe24ad1dd1c
+            signed:
+              type: boolean
+              example: true

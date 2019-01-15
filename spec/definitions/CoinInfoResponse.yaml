@@ -1,0 +1,17 @@
+type: object
+properties:
+  name:
+    type: string
+    example: ABC Coin
+  symbol:
+    type: string
+    example: ABC
+  volume:
+    type: string
+    example: '209369045801925559657593'
+  crr:
+    type: string
+    example: '50'
+  reserve_balance:
+    type: string
+    example: '209369045801925559657593'

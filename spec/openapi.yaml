@@ -1,0 +1,14 @@
+swagger: '2.0'
+info:
+  description: ''
+  version: 1.0.0
+  title: Minter Node API
+  contact:
+    email: dl@minter.org
+  license:
+    name: MIT
+    url: 'https://github.com/MinterTeam/minter-go-node/blob/master/LICENSE'
+host: 'localhost:8841'
+basePath: /
+schemes:
+  - http

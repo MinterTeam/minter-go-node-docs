@@ -1,0 +1,16 @@
+get:
+  summary: Get information about given block
+  description: ''
+  operationId: block
+  produces:
+    - application/json
+  parameters:
+    - name: height
+      in: query
+      description: Block height
+      required: true
+      type: integer
+  responses:
+    '200':
+      schema:
+        $ref: '#/definitions/BlockResponse'

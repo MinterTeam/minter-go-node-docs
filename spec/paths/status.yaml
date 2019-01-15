@@ -1,0 +1,10 @@
+get:
+  summary: Get overall status of Minter Node
+  description: ''
+  operationId: status
+  produces:
+    - application/json
+  responses:
+    '200':
+      schema:
+        $ref: '#/definitions/StatusResponse'
