@@ -1,0 +1,5 @@
+type: object
+properties:
+  commission:
+    type: string
+    example: '209369045801925559657593'

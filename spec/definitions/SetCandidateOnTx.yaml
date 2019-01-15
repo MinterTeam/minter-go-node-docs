@@ -1,0 +1,48 @@
+type: object
+properties:
+  hash:
+    type: string
+    example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+  raw_tx:
+    type: string
+    example: >-
+      f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+  from:
+    type: string
+    example: Mx184ac726059e43643e67290666f7b3195093f870
+  nonce:
+    type: string
+    example: '7069'
+  gas_price:
+    type: string
+    example: '1'
+  type:
+    type: integer
+    example: 10
+  data:
+    type: object
+    properties:
+      pubkey:
+        type: string
+        example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+  payload:
+    type: string
+    example: payload
+  service_data:
+    type: string
+    example: service data
+  gas:
+    type: string
+    example: '10'
+  gas_coin:
+    type: string
+    example: MNT
+  tags:
+    type: object
+    properties:
+      tx.from:
+        type: string
+        example: 184ac726059e43643e67290666f7b3195093f870
+      tx.type:
+        type: string
+        example: '10'

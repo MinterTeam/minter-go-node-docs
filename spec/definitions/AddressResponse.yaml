@@ -1,0 +1,22 @@
+type: object
+properties:
+  jsonrpc:
+    type: string
+    example: '2.0'
+  id:
+    type: string
+    example: ''
+  result:
+    type: object
+    properties:
+      balance:
+        type: object
+        description: Map of address' balances
+        minProperties: 1
+        properties:
+          MNT:
+            type: string
+            example: '10000000000000000000'
+      transaction_count:
+        type: integer
+        example: 1
