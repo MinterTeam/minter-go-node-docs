@@ -969,6 +969,8 @@ info:
         pure PHP SDK for working with Minter blockchain
 
     ## Android SDK
+tags:
+  - name: Node API
 servers:
   - url: 'https://minter-node-1.testnet.minter.network:8841/'
     description: Minter Team testnet server
@@ -2385,6 +2387,8 @@ paths:
       summary: Address
       description: Get balance and transaction count of given address
       operationId: address
+      tags:
+        - Node API
       parameters:
         - name: address
           in: query
@@ -2436,6 +2440,8 @@ paths:
       summary: Block
       description: Get information about given block
       operationId: block
+      tags:
+        - Node API
       parameters:
         - name: height
           in: query
@@ -2473,6 +2479,8 @@ paths:
       summary: Candidate
       description: Get information about candidate
       operationId: candidate
+      tags:
+        - Node API
       parameters:
         - name: pubkey
           in: query
@@ -2516,6 +2524,8 @@ paths:
       summary: Candidates
       description: Get information about candidates
       operationId: candidates
+      tags:
+        - Node API
       parameters:
         - name: height
           in: query
@@ -2553,6 +2563,8 @@ paths:
       summary: Coin Info
       description: Get information about coin
       operationId: coin
+      tags:
+        - Node API
       parameters:
         - name: symbol
           in: query
@@ -2596,6 +2608,8 @@ paths:
       summary: Estimate Buy Coin
       description: Estimate Buy Coin operation
       operationId: estimate_coin_buy
+      tags:
+        - Node API
       parameters:
         - name: coin_to_sell
           in: query
@@ -2654,6 +2668,8 @@ paths:
       summary: Estimate Sell Coin
       description: Estimate Sell Coin operation
       operationId: estimate_coin_sell
+      tags:
+        - Node API
       parameters:
         - name: coin_to_sell
           in: query
@@ -2712,6 +2728,8 @@ paths:
       summary: Estimate Tx Commission
       description: Estimate tx commission
       operationId: estimate_tx_commission
+      tags:
+        - Node API
       parameters:
         - name: tx
           in: query
@@ -2749,6 +2767,8 @@ paths:
       summary: Events
       description: Get events for given height
       operationId: events
+      tags:
+        - Node API
       parameters:
         - name: height
           in: query
@@ -2786,6 +2806,8 @@ paths:
       summary: Max Gas
       description: Maximum available gas in block
       operationId: maxgas
+      tags:
+        - Node API
       parameters:
         - name: height
           in: query
@@ -2807,6 +2829,8 @@ paths:
       summary: Send Transaction
       description: Send Transaction
       operationId: send_transaction
+      tags:
+        - Node API
       parameters:
         - name: tx
           in: query
@@ -2864,6 +2888,8 @@ paths:
       summary: Status
       description: Get overall status of Minter Node
       operationId: status
+      tags:
+        - Node API
       responses:
         '200':
           description: Successful response
@@ -2893,6 +2919,8 @@ paths:
       summary: Transaction
       description: Get transaction by hash
       operationId: transaction
+      tags:
+        - Node API
       parameters:
         - name: hash
           in: query
@@ -2930,6 +2958,8 @@ paths:
       summary: Transactions Search
       description: Search Transactions
       operationId: transactions
+      tags:
+        - Node API
       parameters:
         - name: query
           in: query
@@ -2967,6 +2997,8 @@ paths:
       summary: Unconfirmed Transactions
       description: Unconfirmed Transactions
       operationId: unconfirmed_txs
+      tags:
+        - Node API
       parameters:
         - name: limit
           in: query
@@ -3003,6 +3035,8 @@ paths:
       summary: Validators
       description: Get information about validators
       operationId: validators
+      tags:
+        - Node API
       parameters:
         - name: height
           in: query
