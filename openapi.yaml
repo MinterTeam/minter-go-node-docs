@@ -2407,6 +2407,30 @@ paths:
                 $ref: '#/components/schemas/AddressResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            // Get balance
+            try {
+                $response = $api->getBalance('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+
+            // Get nonce of address
+            try {
+                $response = $api->getNonce('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /block:
     get:
       summary: Block
@@ -2428,6 +2452,22 @@ paths:
                 $ref: '#/components/schemas/BlockResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $height = 1;
+                $response = $api->getBlock($height);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /candidate:
     get:
       summary: Candidate
@@ -2455,6 +2495,22 @@ paths:
                 $ref: '#/components/schemas/CandidateResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $publicKey = 'Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0';
+                $response = $api->getCandidate($publicKey);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /candidates:
     get:
       summary: Candidates
@@ -2476,6 +2532,22 @@ paths:
                 $ref: '#/components/schemas/CandidatesResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $height = 1; // optional, should be positive integer or null
+                $response = $api->getCandidates($height);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /coin_info:
     get:
       summary: Coin Info
@@ -2503,6 +2575,22 @@ paths:
                 $ref: '#/components/schemas/CoinInfoResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $coinSymbol = 'TESTCOIN';
+                $response = $api->getCoinInfo($coinSymbol);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /estimate_coin_buy:
     get:
       summary: Estimate Buy Coin
@@ -2542,6 +2630,25 @@ paths:
                 $ref: '#/components/schemas/EstimateCoinBuyResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $coinToSell = 'TESTCOIN';
+                $coinToBuy = 'MNT';
+                $valueToBuy = '10.5';
+
+                $response = $api->estimateCoinBuy($coinToSell, $valueToBuy, $coinToBuy);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /estimate_coin_sell:
     get:
       summary: Estimate Sell Coin
@@ -2581,6 +2688,25 @@ paths:
                 $ref: '#/components/schemas/EstimateCoinSellResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $coinToSell = 'MNT';
+                $coinToBuy = 'TESTCOIN';
+                $valueToSell = '10.5';
+
+                $response = $api->estimateCoinSell($coinToSell, $valueToSell, $coinToBuy);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /estimate_tx_commission:
     get:
       summary: Estimate Tx Commission
@@ -2602,6 +2728,22 @@ paths:
                 $ref: '#/components/schemas/EstimateTxCommissionResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $tx = '0x...';
+                $response = $api->estimateTxCommission($tx);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /events:
     get:
       summary: Events
@@ -2623,6 +2765,22 @@ paths:
                 $ref: '#/components/schemas/EventsResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $height = 1;
+                $response = $api->getEvents($height);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /max_gas:
     get:
       summary: Max Gas
@@ -2665,6 +2823,42 @@ paths:
                 $ref: '#/components/schemas/SendTransactionResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |-
+            <?php
+            use Minter\MinterAPI;
+            use Minter\SDK\MinterTx;
+            use Minter\SDK\MinterCoins\MinterSendCoinTx;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            // Construct tx
+            $tx = new MinterTx([
+                'nonce' => $api->getNonce('sender address here'),
+                'gasPrice' => 1,
+                'gasCoin' => 'MNT',
+                'type' => MinterSendCoinTx::TYPE,
+                'data' => [
+                    'coin' => 'MTN',
+                    'to' => 'receiver address here',
+                    'value' => '10'
+                ],
+                'payload' => '',
+                'serviceData' => '',
+                'signatureType' => MinterTx::SIGNATURE_SINGLE_TYPE
+            ]);
+
+            // Sign tx
+            $tx = $tx->sign('your private key');
+                
+            try {
+                $response = $api->send($tx);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /status:
     get:
       summary: Status
@@ -2684,10 +2878,16 @@ paths:
           source: |
             <?php
             use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
 
             $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
 
-            print_r($api->getStatus());
+            try {
+                $response = $api->getStatus();
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /transaction:
     get:
       summary: Transaction
@@ -2709,6 +2909,22 @@ paths:
                 $ref: '#/components/schemas/TransactionResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |-
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $hash = 'Mt...';
+                $response = $api->getTransaction($hash);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /transactions:
     get:
       summary: Transactions Search
@@ -2730,6 +2946,22 @@ paths:
                 $ref: '#/components/schemas/TransactionsResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $query = '';
+                $response = $api->getTransactions($query);
+                print_r($response);
+            } catch(RequestException $exception) {
+                
+            }
   /unconfirmed_txs:
     get:
       summary: Unconfirmed Transactions
@@ -2750,6 +2982,22 @@ paths:
                 $ref: '#/components/schemas/UnconfirmedTxsResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $limit = 10; // optional, should be positive integer or null
+                $response = $api->getUnconfirmedTxs($limit);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
   /validators:
     get:
       summary: Validators
@@ -2771,3 +3019,18 @@ paths:
                 $ref: '#/components/schemas/ValidatorsResponse'
         '500':
           $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $response = $api->getValidators();
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }

@@ -2111,7 +2111,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\n// Get balance\ntry {\n    $response = $api->getBalance('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n\n// Get nonce of address\ntry {\n    $response = $api->getNonce('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/block": {
@@ -2144,7 +2150,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $height = 1;\n    $response = $api->getBlock($height);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/candidate": {
@@ -2186,7 +2198,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $publicKey = 'Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0';\n    $response = $api->getCandidate($publicKey);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/candidates": {
@@ -2219,7 +2237,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $height = 1; // optional, should be positive integer or null\n    $response = $api->getCandidates($height);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/coin_info": {
@@ -2261,7 +2285,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $coinSymbol = 'TESTCOIN';\n    $response = $api->getCoinInfo($coinSymbol);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/estimate_coin_buy": {
@@ -2321,7 +2351,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $coinToSell = 'TESTCOIN';\n    $coinToBuy = 'MNT';\n    $valueToBuy = '10.5';\n\n    $response = $api->estimateCoinBuy($coinToSell, $valueToBuy, $coinToBuy);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/estimate_coin_sell": {
@@ -2381,7 +2417,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $coinToSell = 'MNT';\n    $coinToBuy = 'TESTCOIN';\n    $valueToSell = '10.5';\n\n    $response = $api->estimateCoinSell($coinToSell, $valueToSell, $coinToBuy);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/estimate_tx_commission": {
@@ -2414,7 +2456,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $tx = '0x...';\n    $response = $api->estimateTxCommission($tx);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/events": {
@@ -2447,7 +2495,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $height = 1;\n    $response = $api->getEvents($height);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/max_gas": {
@@ -2513,7 +2567,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse Minter\\SDK\\MinterTx;\nuse Minter\\SDK\\MinterCoins\\MinterSendCoinTx;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\n// Construct tx\n$tx = new MinterTx([\n    'nonce' => $api->getNonce('sender address here'),\n    'gasPrice' => 1,\n    'gasCoin' => 'MNT',\n    'type' => MinterSendCoinTx::TYPE,\n    'data' => [\n        'coin' => 'MTN',\n        'to' => 'receiver address here',\n        'value' => '10'\n    ],\n    'payload' => '',\n    'serviceData' => '',\n    'signatureType' => MinterTx::SIGNATURE_SINGLE_TYPE\n]);\n\n// Sign tx\n$tx = $tx->sign('your private key');\n    \ntry {\n    $response = $api->send($tx);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}"
+          }
+        ]
       }
     },
     "/status": {
@@ -2539,7 +2599,7 @@
         "x-code-samples": [
           {
             "lang": "PHP",
-            "source": "<?php\nuse Minter\\MinterAPI;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\nprint_r($api->getStatus());\n"
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $response = $api->getStatus();\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
           }
         ]
       }
@@ -2574,7 +2634,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $hash = 'Mt...';\n    $response = $api->getTransaction($hash);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}"
+          }
+        ]
       }
     },
     "/transactions": {
@@ -2607,7 +2673,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $query = '';\n    $response = $api->getTransactions($query);\n    print_r($response);\n} catch(RequestException $exception) {\n    \n}\n"
+          }
+        ]
       }
     },
     "/unconfirmed_txs": {
@@ -2639,7 +2711,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $limit = 10; // optional, should be positive integer or null\n    $response = $api->getUnconfirmedTxs($limit);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     },
     "/validators": {
@@ -2672,7 +2750,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $response = $api->getValidators();\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
+          }
+        ]
       }
     }
   }
