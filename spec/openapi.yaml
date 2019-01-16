@@ -11,6 +11,1285 @@ info:
     url: >-
       https://github.com/MinterTeam/minter-go-node/raw/master/minter-logo.svg?sanitize=true
     altText: Minter logo
+  description: >
+    # Introduction
+
+
+    Minter is a blockchain network that lets people, projects, and companies
+    issue and manage their own coins and trade them at a fair market price with
+    absolute and instant liquidity.
+
+
+    # Install Minter
+
+
+    There are several ways you can install Minter Blockchain Testnet node on
+    your machine.
+
+
+    ## Using binary
+
+
+    1. **Download Minter**
+
+       Get [latest binary build](https://github.com/MinterTeam/minter-go-node/releases) suitable for your architecture and unpack it to desired folder.
+
+    2. **Run Minter**
+
+       ```bash
+       ./minter
+       ```
+
+      Then open http://localhost:3000/ in local browser to see node's GUI.
+
+    ## From Source
+
+
+    You'll need `golang` installed https://golang.org/doc/install and the
+    required
+
+    [environment variables
+    set](https://github.com/tendermint/tendermint/wiki/Setting-GOPATH)
+
+
+    1. **Clone Minter source code to your machine**
+
+      ```bash
+      mkdir -p $GOPATH/src/github.com/MinterTeam
+      cd $GOPATH/src/github.com/MinterTeam
+      git clone https://github.com/MinterTeam/minter-go-node.git
+      cd minter-go-node
+      ```
+
+    2. **Get Tools & Dependencies**
+
+      ```bash
+      make get_tools
+      make get_vendor_deps
+      ```
+
+    3. **Compile**
+
+      ```bash
+      make install
+      ```
+
+      to put the binary in `$GOPATH/bin` or use:
+
+      ```bash
+      make build
+      ```
+
+      to put the binary in `./build`.
+
+      The latest `minter version` is now installed.
+
+    4. **Run Minter**
+
+      ```bash
+      minter
+      ```
+
+      Then open `http://localhost:3000/` in local browser to see node's GUI.
+
+    # Blockchain Specification
+
+
+    **Tendermint**
+
+
+    Minter Blockchain utilizes `Tendermint Consensus Engine`.
+
+
+    Tendermint is software for securely and consistently replicating an
+    application on many machines.
+
+    By securely, we mean that Tendermint works even if up to 1/3 of machines
+    fail in arbitrary ways.
+
+    By consistently, we mean that every non-faulty machine sees the same
+    transaction log and computes the same state.
+
+    Secure and consistent replication is a fundamental problem in distributed
+    systems; it plays a critical role in the
+
+    fault tolerance of a broad range of applications, from currencies, to
+    elections, to infrastructure orchestration,
+
+    and beyond.
+
+
+    Tendermint is designed to be easy-to-use, simple-to-understand, highly
+    performant, and useful for a wide variety of
+
+    distributed applications.
+
+
+    You can read more about Tendermint Consensus in [official
+    documentation](https://tendermint.com/docs/)
+
+
+    **Consensus**
+
+
+    In Minter we implemented Delegated Proof of Stake (DPOS) Consensus Protocol.
+
+
+    DPOS is the fastest, most efficient, most decentralized, and most flexible
+    consensus model available. DPOS leverages the power of stakeholder approval
+    voting to resolve consensus issues in a fair and democratic way.
+
+
+    **Block speed**
+
+
+    Minter Blockchain is configured to produce `1 block per 5 sec`. Actual block
+    speed may vary depends on validators count, their computational power,
+    internet speed, etc.
+
+
+    **Block size**
+
+
+    We limit block size to `10 000 transactions`. Block size in terms of bytes
+    is not limited.
+
+
+    # Coins
+
+
+    Minter Blockchain is multi-coin system.
+
+
+    Base coin in testnet is `MNT`.\
+
+    Base coin in mainnet is `BIP`.
+
+
+    Smallest part of *each* coin is called `pip`.\
+
+    1 pip = 1^-18 of any coin. In Blockchain and API we only operating with
+    pips.
+
+
+    > **Note:** Each coin has its **own** pip. You should treat pip like atomic
+    part of a coin, not as currency:\
+
+    > 1 MNT = 10^18 pip (MNT's pip)\
+
+    > 1 ABC = 10^18 pip (ABC's pip)\
+
+    > 1 MNT != 1 ABC
+
+
+    ## Coin Issuance
+
+
+    Every user of Minter can issue own coin. Each coin is backed by base coin in
+    some proportion.
+
+    Issue own coin is as simple as filling a form with given fields:
+
+
+    - **Coin name** - Name of a coin. Arbitrary string up to 64 letters length.
+
+    - **Coin symbol** - Symbol of a coin. Must be unique, alphabetic, uppercase,
+    3 to 10 letters length.
+
+    - **Initial supply** - Amount of coins to issue. Issued coins will be
+    available to sender account.
+
+    - **Initial reserve** - Initial reserve in base coin.
+
+    - **Constant Reserve Ratio (CRR)** - uint, should be from 10 to 100.
+
+
+    After coin issued you can send is as ordinary coin using standard wallets.
+
+
+    ## Issuance Fees
+
+
+    To issue a coin Coiner should pay fee. Fee is depends on length of Coin
+    Symbol.
+
+
+    3 letters – 1 000 000 bips + standard transaction fee\
+
+    4 letters – 100 000 bips + standard transaction fee\
+
+    5 letters – 10 000 bips + standard transaction fee\
+
+    6 letters – 1000 bips + standard transaction fee\
+
+    7 letters – 100 bips + standard transaction fee\
+
+    8 letters – 10 bips + standard transaction fee\
+
+    9-10 letters - just standard transaction fee
+
+
+    ## Coin Exchange
+
+
+    Each coin in system can be instantly exchanged to another coin. This is
+    possible because each coin has "reserve" in base
+
+    coin.
+
+
+    Here are some formulas we are using for coin conversion:
+
+
+    **CalculatePurchaseReturn**\
+
+    Given a coin supply (s), reserve balance (r), CRR (c) and a deposit amount
+    (d), calculates the return for a given conversion (in the base coin):
+
+
+    ```go
+
+    return s * ((1 + d / r) ^ c - 1);
+
+    ```  
+
+
+
+    **CalculateSaleReturn**\
+
+    Given a coin supply (s), reserve balance (r), CRR (c) and a sell amount (a),
+    calculates the return for a given conversion
+
+
+    ```go
+
+    return r * (1 - (1 - a / s) ^ (1 / c));
+
+    ```
+
+
+    # Transactions
+
+
+    Transactions in Minter are
+    [RLP-encoded](https://github.com/ethereum/wiki/wiki/RLP) structures.
+
+
+    Example of a signed transaction:
+
+        f873230101aae98a4d4e540000000000000094a93163fdf10724dc4785ff5cbfb9
+        ac0b5949409f880de0b6b3a764000080801ba06838db4a2197cfd70ede8d8d184d
+        bf332932ca051a243eb7886791250e545dd3a04b63fb1d1b5ef5f2cbd2ea12530c
+        da520b3280dcb75bfd45a873629109f24b29
+
+    Each transaction has:
+
+
+    -   **Nonce** - int, used for prevent transaction reply.
+
+    -   **Gas Price** - big int, used for managing transaction fees.
+
+    -   **Gas Coin** - 10 bytes, symbol of a coin to pay fee
+
+    -   **Type** - type of transaction (see below).
+
+    -   **Data** - data of transaction (depends on transaction type).
+
+    -   **Payload** (arbitrary bytes) - arbitrary user-defined bytes.
+
+    -   **Service Data** - reserved field.
+
+    -   **Signature Type** - single or multisig transaction.
+
+    -   **Signature Data** - digital signature of transaction.
+
+
+    ```go
+
+    type Transaction struct {
+        Nonce         uint64
+        GasPrice      *big.Int
+        GasCoin       [10]byte
+        Type          byte
+        Data          []byte
+        Payload       []byte
+        ServiceData   []byte
+        SignatureType byte
+        SignatureData Signature
+    }
+
+
+    type Signature struct {
+        V           *big.Int
+        R           *big.Int
+        S           *big.Int
+    }
+
+
+    type MultiSignature struct {
+        MultisigAddress [20]byte
+        Signatures      []Signature
+    }
+
+    ```
+
+
+    ## Signature Types
+
+
+    |Type Name                           |Byte|
+
+    |----------------------------------- |----|
+
+    |**TypeSingle**                      |0x01|
+
+    |**TypeMulti**                       |0x02|
+
+
+    ## Types
+
+
+    Type of transaction is determined by a single byte.
+
+
+    |Type Name                           |Byte|
+
+    |----------------------------------- |----|
+
+    |**TypeSend**                        |0x01|
+
+    |**TypeSellCoin**                    |0x02|
+
+    |**TypeSellAllCoin**                 |0x03|
+
+    |**TypeBuyCoin**                     |0x04|
+
+    |**TypeCreateCoin**                  |0x05|
+
+    |**TypeDeclareCandidacy**            |0x06|
+
+    |**TypeDelegate**                    |0x07|
+
+    |**TypeUnbond**                      |0x08|
+
+    |**TypeRedeemCheck**                 |0x09|
+
+    |**TypeSetCandidateOnline**          |0x0A|
+
+    |**TypeSetCandidateOffline**         |0x0B|
+
+    |**TypeCreateMultisig**              |0x0C|
+
+    |**TypeMultisend**                   |0x0D|
+
+    |**TypeEditCandidate**               |0x0E|
+
+
+    ## Send transaction
+
+
+    Type: **0x01**
+
+
+    Transaction for sending arbitrary coin.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type SendData struct {
+        Coin  [10]byte
+        To    [20]byte
+        Value *big.Int
+    }
+
+    ```
+
+
+    **Coin** - Symbol of a coin.
+
+    **To** - Recipient address in Minter Network.
+
+    **Value** - Amount of **Coin** to send.
+
+
+    ## Sell coin transaction
+
+
+    Type: **0x02**
+
+
+    Transaction for selling one coin (owned by sender) in favour of another coin
+    in a system.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type SellCoinData struct {
+        CoinToSell          [10]byte
+        ValueToSell         *big.Int
+        CoinToBuy           [10]byte
+        MinimumValueToBuy   *big.Int
+    }
+
+    ```
+
+
+    **CoinToSell** - Symbol of a coin to give.
+
+    **ValueToSell** - Amount of **CoinToSell** to give.
+
+    **CoinToBuy** - Symbol of a coin to get.
+
+    **MinimumValueToBuy** - Minimum value of coins to get.
+
+
+    ## Sell all coin transaction
+
+
+    Type: **0x03**
+
+
+    Transaction for selling all existing coins of one type (owned by sender) in
+    favour of another coin in a system.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type SellAllCoinData struct {
+        CoinToSell          [10]byte
+        CoinToBuy           [10]byte
+        MinimumValueToBuy   *big.Int
+    }
+
+    ```
+
+
+    **CoinToSell** - Symbol of a coin to give.
+
+    **CoinToBuy** - Symbol of a coin to get.
+
+    **MinimumValueToBuy** - Minimum value of coins to get.
+
+
+    ## Buy coin transaction
+
+
+    Type: **0x04**
+
+
+    Transaction for buy a coin paying another coin (owned by sender).
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type BuyCoinData struct {
+        CoinToBuy           [10]byte
+        ValueToBuy          *big.Int
+        CoinToSell          [10]byte
+        MaximumValueToSell  *big.Int
+    }
+
+    ```
+
+
+    **CoinToBuy** - Symbol of a coin to get.
+
+    **ValueToBuy** - Amount of **CoinToBuy** to get.
+
+    **CoinToSell** - Symbol of a coin to give.
+
+    **MaximumValueToSell** - Maximum value of coins to sell.
+
+
+    ## Create coin transaction
+
+
+    Type: **0x05**
+
+
+    Transaction for creating new coin in a system.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type CreateCoinData struct {
+        Name                 string
+        Symbol               [10]byte
+        InitialAmount        *big.Int
+        InitialReserve       *big.Int
+        ConstantReserveRatio uint
+    }
+
+    ```
+
+
+    **Name** - Name of a coin. Arbitrary string up to 64 letters length.
+
+    **Symbol** - Symbol of a coin. Must be unique, alphabetic, uppercase, 3 to
+    10 symbols length.
+
+    **InitialAmount** - Amount of coins to issue. Issued coins will be available
+    to sender account.
+
+    **InitialReserve** - Initial reserve in BIP's.
+
+    **ConstantReserveRatio** - CRR, uint, should be from 10 to 100.
+
+
+    ## Declare candidacy transaction
+
+
+    Type: **0x06**
+
+
+    Transaction for declaring new validator candidacy.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type DeclareCandidacyData struct {
+        Address    [20]byte
+        PubKey     []byte
+        Commission uint
+        Coin       [10]byte
+        Stake      *big.Int
+    }
+
+    ```
+
+
+    **Address** - Address of candidate in Minter Network. This address would be
+    able to control candidate. Also all rewards will be sent to this address.
+
+    **PubKey** - Public key of a validator.
+
+    **Commission** - Commission (from 0 to 100) from rewards which delegators
+    will pay to validator.
+
+    **Coin** - Symbol of coin to stake.
+
+    **Stake** - Amount of coins to stake.
+
+
+    ## Delegate transaction
+
+
+    Type: **0x07**
+
+
+    Transaction for delegating funds to validator.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type DelegateData struct {
+        PubKey []byte
+        Coin   [10]byte
+        Stake  *big.Int
+    }
+
+    ```
+
+
+    **PubKey** - Public key of a validator.
+
+    **Coin** - Symbol of coin to stake.
+
+    **Stake** - Amount of coins to stake.
+
+
+    ## Unbond transaction
+
+
+    Type: **0x08**
+
+
+    Transaction for unbonding funds from validator's stake.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type UnbondData struct {
+        PubKey []byte
+        Coin   [10]byte
+        Value  *big.Int
+    }
+
+    ```
+
+
+    **PubKey** - Public key of a validator.
+
+    **Coin** - Symbol of coin to unbond.
+
+    **Value** - Amount of coins to unbond.
+
+
+    ## Redeem check transaction
+
+
+    Type: **0x09**
+
+
+    Transaction for redeeming a check.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type RedeemCheckData struct {
+        RawCheck []byte
+        Proof    [65]byte
+    }
+
+    ```
+
+
+    **RawCheck** - Raw check received from sender.
+
+    **Proof** - Proof of owning a check.
+
+
+    ## Set candidate online transaction
+
+
+    Type: **0x0A**
+
+
+    Transaction for turning candidate on. This transaction should be sent from
+    address which is set in the "Declare candidacy transaction".
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type SetCandidateOnData struct {
+        PubKey []byte
+    }
+
+    ```
+
+
+    **PubKey** - Public key of a validator.
+
+
+    ## Set candidate offline transaction
+
+
+    Type: **0x0B**
+
+
+    Transaction for turning candidate off. This transaction should be sent from
+    address which is set in the "Declare candidacy transaction".
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type SetCandidateOffData struct {
+        PubKey []byte
+    }
+
+    ```
+
+
+    **PubKey** - Public key of a validator.
+
+
+    ## Create multisig address
+
+
+    Type: **0x0C**
+
+
+    Transaction for creating multisignature address.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type CreateMultisigData struct {
+        Threshold uint
+        Weights   []uint
+        Addresses [][20]byte
+    }
+
+    ```
+
+
+    ## Multisend transaction
+
+
+    Type: **0x0D**
+
+
+    Transaction for sending coins to multiple addresses.
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type MultisendData struct {
+        List []MultisendDataItem
+    }
+
+
+    type MultisendDataItem struct {
+        Coin  [10]byte
+        To    [20]byte
+        Value *big.Int
+    }
+
+    ```
+
+
+    ## Edit candidate transaction
+
+
+    Type: **0x0E**
+
+
+    Transaction for editing existing candidate
+
+
+    *Data field contents:*
+
+
+    ```go
+
+    type EditCandidateData struct {
+        PubKey           []byte
+        RewardAddress    [20]byte
+        OwnerAddress     [20]byte
+    }
+
+    ```
+
+
+    # Minter Check
+
+
+    Minter Check is like an ordinary bank check. Each user of network can
+
+    issue check with any amount of coins and pass it to another person.
+
+    Receiver will be able to cash a check from arbitrary account.
+
+
+    ## Introduction
+
+
+    Checks are prefixed with "Mc". Here is example of a Minter Check:
+
+
+    ```
+
+    Mcf89b01830f423f8a4d4e5400000000000000843b9aca00b8419b3beac2c6ad88a8bd54d2
+
+    4912754bb820e58345731cb1b9bc0885ee74f9e50a58a80aa990a29c98b05541b266af99d3
+
+    825bb1e5ed4e540c6e2f7c9b40af9ecc011ca0387fd67ec41be0f1cf92c7d0181368b4c67a
+
+    b07df2d2384192520d74ff77ace6a04ba0e7ad7b34c64223fe59584bc464d53fcdc7091faa
+
+    ee5df0451254062cfb37
+
+    ```
+
+
+    Each Minter Check has:
+
+    -   **Nonce** - unique "id" of the check.
+
+    -   **Coin Symbol** - symbol of coin.
+
+    -   **Value** - amount of coins.
+
+    -   **Due Block** - defines last block height in which the check can
+        be used.
+    -   **Lock** - secret to prevent hijacking.
+
+    -   **Signature** - signature of issuer.
+
+
+    ## Check hijacking protection
+
+
+    Minter Checks are issued offline and do not exist in blockchain before
+
+    "cashing". So we decided to use special passphrase to protect checks
+
+    from hijacking by another person in the moment of activation. Hash of
+
+    this passphrase is used as private key in ECDSA to prove that sender is
+
+    the one who owns the check.
+
+
+    *TODO: describe algorithm*
+
+
+    ## How to issue a Minter Check
+
+
+    For issuing Minter Check you can use our
+
+    [tool](https://testnet.console.minter.network).
+
+
+    You will need to fill a form:
+
+
+    :   -   **Nonce** - unique \"id\" of the check.
+        -   **Coin Symbol** - symbol of coin.
+        -   **Value** - amount of coins.
+        -   **Pass phrase** - secret phrase which you will pass to receiver
+            of the check.
+            
+    ## How to cash a Minter Check
+
+
+    To redeem a check user should have:
+
+    -   Check itself
+
+    -   Secret passphrase
+
+
+    After redeeming balance of user will increased instantly.
+
+
+    ## Commission
+
+
+    There is no commission for issuing a check because it done offline. In
+
+    the moment of cashing issuer will pay commission.
+
+
+    # Multisignatures
+
+
+    Minter has built-in support for multisignature wallets. Multisignatures,
+
+    or technically Accountable Subgroup Multisignatures (ASM), are signature
+
+    schemes which enable any subgroup of a set of signers to sign any
+
+    message, and reveal to the verifier exactly who the signers were.
+
+
+    Suppose the set of signers is of size *n*. If we validate a signature if
+
+    any subgroup of size *k* signs a message, this becomes what is commonly
+
+    reffered to as a *k* of *n* multisig in Bitcoin.
+
+
+    Minter Multisig Wallets has 2 main goals:
+
+    -   Atomic swaps with sidechains
+
+    -   Basic usage to manage funds within Minter Blockchain
+
+
+    ## Structure of multisig wallet
+
+
+    Each multisig wallet has:
+
+    -   Set of signers with corresponding weights
+
+    -   Threshold
+
+
+    Transactions from multisig wallets are proceed identically to the K of N
+
+    multisig in Bitcoin, except the multisig fails if the sum of the weights
+
+    of signatures is less than the threshold.
+
+
+    ## How to create multisig wallet
+
+
+    TO BE DESCRIBED
+
+
+    ## How to use multisig wallet
+
+
+    TO BE DESCRIBED
+
+
+    # Commissions
+
+
+    For each transaction sender should pay fee. Fees are measured in
+
+    "units".
+
+
+    1 unit = 10^15 pip = 0.001 bip.
+
+
+    ## Standard commissions
+
+
+    Here is a list of current fees:
+
+      |Type                             | Fee |
+      |---------------------------------| ---------------------|
+      |**TypeSend**                     | 10 units |
+      |**TypeSellCoin**                 | 100 units |
+      |**TypeSellAllCoin**              | 100 units |
+      |**TypeBuyCoin**                  | 100 units |
+      |**TypeCreateCoin**               | 1000 units |
+      |**TypeDeclareCandidacy**         | 10000 units |
+      |**TypeDelegate**                 | 100 units |
+      |**TypeUnbond**                   | 100 units |
+      |**TypeRedeemCheck**              | 30 units |
+      |**TypeSetCandidateOnline**       | 100 units |
+      |**TypeSetCandidateOffline**      | 100 units |
+      |**TypeCreateMultisig**           | 100 units |
+      |**TypeMultisend**                | 10+(n-1)*5 units |
+      |**TypeEditCandidate**            | 10000 units |
+
+    Also sender should pay extra 2 units per byte in Payload and Service
+
+    Data fields.
+
+
+    Multisend transaction requires 1 unit per recipient excluding first one.
+
+
+    ## Special fees
+
+
+    To issue a coin with short name Coiner should pay extra fee. Fee is
+
+    depends on length of Coin Symbol.
+
+
+    3 letters -- 1 000 000 bips + standard transaction fee\
+
+    4 letters -- 100 000 bips + standard transaction fee\
+
+    5 letters -- 10 000 bips + standard transaction fee\
+
+    6 letters -- 1000 bips + standard transaction fee\
+
+    7 letters -- 100 bips + standard transaction fee\
+
+    8 letters -- 10 bips + standard transaction fee\
+
+    9-10 letters - just standard transaction fee
+
+
+    # Validators
+
+
+    ## Introduction
+
+
+    The Minter Blockchain is based on Tendermint, which relies on a set of
+
+    validators that are responsible for committing new blocks in the
+
+    blockchain. These validators participate in the consensus protocol by
+
+    broadcasting votes which contain cryptographic signatures signed by each
+
+    validator's private key.
+
+
+    Validator candidates can bond their own coins and have coins
+
+    "delegated", or staked, to them by token holders. The validators are
+
+    determined by who has the most stake delegated to them.
+
+
+    Validators and their delegators will earn BIP (MNT) as rewards for
+
+    blocks and commissions. Note that validators can set commission on the
+
+    rewards their delegators receive as additional incentive.
+
+
+    If validators double sign or frequently offline, their staked coins
+
+    (including coins of users that delegated to them) can be slashed. The
+
+    penalty depends on the severity of the violation.
+
+
+    ## Requirements
+
+    Minimal requirements for running Validator\'s Node in testnet are:
+
+
+    -   4GB RAM
+
+    -   200GB SSD
+
+    -   x64 2.0 GHz 4 vCPUs
+
+
+    SSD disks are preferable for high transaction throughput.
+
+
+    Recommended:
+
+
+    -   4GB RAM
+
+    -   200GB SSD
+
+    -   x64 3.4 GHz 8 vCPUs
+
+    -   HSM
+
+
+    ## Validators limitations
+
+    Minter Network has limited number of available slots for validators.
+
+
+    At genesis there will be just `16` of them. `4` slots will be added each
+
+    `518,400` blocks. Maximum validators count is `256`.
+
+
+    ## Rewards
+
+    Rewards for blocks and commissions are accumulated and proportionally
+
+    (based on stake value) payed once per `12 blocks` (approx 1 minute) to
+
+    all active validators (and their delegators).
+
+
+    Block rewards are configured to decrease from 333 to 0 BIP (MNT) in \~7
+
+    years.
+
+
+    Delegators receive their rewards at the same time after paying
+
+    commission to their validators (commission value is based on
+
+    validator\'s settings).
+
+
+    `10%` from reward going to DAO account.
+
+
+    `10%` from reward going to Developers.
+
+
+    ## Rules and fines
+
+
+    Validators have one main responsibility:
+
+    -   Be able to constantly run a correct version of the software:
+        validators need to make sure that their servers are always online
+        and their private keys are not compromised.
+
+    If a validator misbehaves, its bonded stake along with its delegators\'
+
+    stake and will be slashed. The severity of the punishment depends on the
+
+    type of fault. There are 3 main faults that can result in slashing of
+
+    funds for a validator and its delegators:
+
+
+    -   **Double signing**: If someone reports on chain A that a validator
+        signed two blocks at the same height on chain A and chain B, this
+        validator will get slashed on chain A
+    -   **Unavailability**: If a validator\'s signature has not been
+        included in the last 12 blocks, 1% of stake will get slashed and
+        validator will be turned off
+
+    Note that even if a validator does not intentionally misbehave, it can
+
+    still be slashed if its node crashes, looses connectivity, gets DDOSed,
+
+    or if its private key is compromised.
+
+
+    ## Becoming validator in testnet
+
+
+    1. Install and run Minter Full Node.
+
+    2. Get your validator\'s public key from [Minter
+        GUI](http://localhost:3000/).
+    3. Go to [Minter
+    Console](https://testnet.console.minter.network/masternode/) and send 2
+    transactions:
+
+        :   Fill and send `Declare candidacy` and `Set candidate online`
+            forms.
+
+            P.S. You can receive testnet coins in our telegram
+            wallet \@BipWallet\_Bot.
+
+            3.1. Declare candidacy
+
+            :   Validators should declare their candidacy, after which users
+                can delegate and, if they so wish, unbond. Then declaring
+                candidacy validator should fill a form:
+
+                -   Address - You will receive rewards to this address and
+                    will be able to on/off your validator.
+                -   Public Key - Paste public key from step 2 *(Mp\...)*.
+                -   Commission - Set commission for delegated stakes.
+                -   Coin - Enter coin of your stake (i.e. MNT).
+                -   Stake - Enter value of your stake in given coin.
+
+            ![](assets/console-declare.png){width="600px"}
+
+            3.2. Set candidate online
+
+            :   Validator is **offline** by default. When offline, validator
+                is not included in the list of Minter Blockchain validators,
+                so he is not receiving any rewards and cannot be punished
+                for low availability.
+
+                To turn your validator **on**, you should provide Public Key
+                (from step 2 *(Mp\...)*).
+
+                *Note: You should send transaction from address you choose
+                in Address field in step 3.1*
+
+            ![](assets/console-candidate-on.png){width="600px"}
+
+    4.  
+
+        Done.
+
+        :   Now you will receive reward as long as your node is running and
+            available.
+
+    ## DDOS protection. Sentry node architecture
+
+    Denial-of-service attacks occur when an attacker sends a flood of
+
+    internet traffic to an IP address to prevent the server at the IP
+
+    address from connecting to the internet.
+
+
+    An attacker scans the network, tries to learn the IP address of various
+
+    validator nodes and disconnect them from communication by flooding them
+
+    with traffic.
+
+
+    One recommended way to mitigate these risks is for validators to
+
+    carefully structure their network topology in a so-called sentry node
+
+    architecture.
+
+
+    Validator nodes should only connect to full-nodes they trust because
+
+    they operate them themselves or are run by other validators they know
+
+    socially. A validator node will typically run in a data center. Most
+
+    data centers provide direct links the networks of major cloud providers.
+
+    The validator can use those links to connect to sentry nodes in the
+
+    cloud. This shifts the burden of denial-of-service from the validator\'s
+
+    node directly to its sentry nodes, and may require new sentry nodes be
+
+    spun up or activated to mitigate attacks on existing ones.
+
+
+    Sentry nodes can be quickly spun up or change their IP addresses.
+
+    Because the links to the sentry nodes are in private IP space, an
+
+    internet based attacked cannot disturb them directly. This will ensure
+
+    validator block proposals and votes always make it to the rest of the
+
+    network.
+
+
+    It is expected that good operating procedures on that part of validators
+
+    will completely mitigate these threats.
+
+
+    ### Practical instructions
+
+
+    To setup your sentry node architecture you can follow the instructions
+
+    below:
+
+
+    Validators nodes should edit their `config.toml`:
+
+    ```toml
+        # Comma separated list of nodes to keep persistent connections to
+        # Do not add private peers to this list if you don't want them advertised
+        persistent_peers = [list of sentry nodes]
+
+        # Set true to enable the peer-exchange reactor
+        pex = false
+    ```
+
+
+    Sentry Nodes should edit their `config.toml`:
+
+    ```toml
+        # Comma separated list of peer IDs to keep private (will not be gossiped to other peers)
+        private_peer_ids = "ipaddress of validator nodes"
+    ```
 servers:
   - url: 'https://minter-node-1.testnet.minter.network:8841/'
     description: Minter Team testnet server

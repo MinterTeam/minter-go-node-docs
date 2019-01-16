@@ -1,4 +1,4 @@
-hideDownloadButton: true
+hideDownloadButton: false
 expandResponses: true
 requiredPropsFirst: true
 onlyRequiredInSamples: true
