@@ -1353,9 +1353,8 @@ info:
 
     ## Revenue
 
-    Validators and delegators earn revenue in exchange for their services.
-
-    This revenue is given in three forms:
+    Validators and delegators earn revenue in exchange for their services. This
+    revenue is given in three forms:
 
     - Block rewards
 
@@ -1363,7 +1362,7 @@ info:
         transactions fees. Fees are distributed to validators and delegators
         in proportion to their stake.
 
-    ## Validator\'s commission
+    ## Validator commission
 
     Each validator\'s staking pool receives revenue in proportion to its
 
@@ -1451,6 +1450,39 @@ info:
     unbond from it or switch to another validator. Delegators can also
 
     mitigate risk by distributing their stake across multiple validators.
+
+
+    # Minter SDKs
+
+
+    ## JavaScript SDK
+
+    -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
+        communicate with the Minter blockchain through its API
+    -   [minter-js-org](https://github.com/MinterTeam/minter-js-org) –
+        communicate with the my.minter user database
+    -   [minterjs-wallet](https://github.com/MinterTeam/minterjs-wallet) –
+        BIP0032 HD Wallet implementation
+    -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – create,
+        manipulate and sign Minter transactions
+    -   [minterjs-util](https://github.com/MinterTeam/minterjs-util) – a
+        collection of utility functions for Minter
+
+    ## iOS SDK
+
+    -   [minter-ios-core](https://github.com/MinterTeam/minter-ios-core) –
+        create, manipulate and sign Minter transactions
+    -   [minter-ios-explorer](https://github.com/MinterTeam/minter-ios-explorer)
+        – communicate with the Minter blockchain through Explorer
+    -   [minter-ios-my](https://github.com/MinterTeam/minter-ios-my) –
+        communicate with the my.minter user database
+
+    ## PHP SDK
+
+    -   [minter-php-sdk](https://github.com/MinterTeam/minter-php-sdk) – a
+        pure PHP SDK for working with Minter blockchain
+
+    ## Android SDK
 servers:
   - url: 'https://minter-node-1.testnet.minter.network:8841/'
     description: Minter Team testnet server
