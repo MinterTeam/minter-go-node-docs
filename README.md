@@ -1,10 +1,10 @@
 # Minter Go Node API OpenAPI Specification
-[![Build Status](https://travis-ci.com/MinterTeam/minter-go-node-api-docs.svg?branch=master)](https://travis-ci.com/MinterTeam/minter-go-node-api-docs)
+[![Build Status](https://travis-ci.com/MinterTeam/minter-go-node-docs.svg?branch=master)](https://travis-ci.com/MinterTeam/minter-go-node-docs)
 
 ## Links
 
-- [Reference Documentation (ReDoc)](https://minterteam.github.io/minter-go-node-api-docs/)
-- OpenAPI Raw Files: [JSON](https://minterteam.github.io/minter-go-node-api-docs/openapi.json) [YAML](https://minterteam.github.io/minter-go-node-api-docs/openapi.yaml)
+- [Reference Documentation (ReDoc)](https://minterteam.github.io/minter-go-node-docs/)
+- OpenAPI Raw Files: [JSON](https://minterteam.github.io/minter-go-node-docs/openapi.json) [YAML](https://minterteam.github.io/minter-go-node-docs/openapi.yaml)
 
 **Warning:** All above links are updated only after Travis CI finishes deployment
 
