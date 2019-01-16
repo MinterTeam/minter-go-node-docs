@@ -1134,6 +1134,60 @@ components:
                   signed:
                     type: boolean
                     example: true
+    TransactionResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/SendTx'
+            - $ref: '#/components/schemas/SellCoinTx'
+            - $ref: '#/components/schemas/SellAllCoinTx'
+            - $ref: '#/components/schemas/BuyCoinTx'
+            - $ref: '#/components/schemas/CreateCoinTx'
+            - $ref: '#/components/schemas/DeclareCandidacyTx'
+            - $ref: '#/components/schemas/DelegateTx'
+            - $ref: '#/components/schemas/UnbondTx'
+            - $ref: '#/components/schemas/RedeemCheckTx'
+            - $ref: '#/components/schemas/SetCandidateOffTx'
+            - $ref: '#/components/schemas/SetCandidateOnTx'
+            - $ref: '#/components/schemas/CreateMultisigTx'
+            - $ref: '#/components/schemas/MultisendTx'
+            - $ref: '#/components/schemas/EditCandidateTx'
+    TransactionsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: array
+          items:
+            type: object
+            anyOf:
+              - $ref: '#/components/schemas/SendTx'
+              - $ref: '#/components/schemas/SellCoinTx'
+              - $ref: '#/components/schemas/SellAllCoinTx'
+              - $ref: '#/components/schemas/BuyCoinTx'
+              - $ref: '#/components/schemas/CreateCoinTx'
+              - $ref: '#/components/schemas/DeclareCandidacyTx'
+              - $ref: '#/components/schemas/DelegateTx'
+              - $ref: '#/components/schemas/UnbondTx'
+              - $ref: '#/components/schemas/RedeemCheckTx'
+              - $ref: '#/components/schemas/SetCandidateOffTx'
+              - $ref: '#/components/schemas/SetCandidateOnTx'
+              - $ref: '#/components/schemas/CreateMultisigTx'
+              - $ref: '#/components/schemas/MultisendTx'
+              - $ref: '#/components/schemas/EditCandidateTx'
     BuyCoinTx:
       type: object
       properties:
@@ -1291,6 +1345,26 @@ components:
                   - 1
                   - 2
                 example: 1
+    ValidatorsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              pubkey:
+                type: string
+                example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
+              voting_power:
+                type: string
+                example: '10'
     CoinInfoResponse:
       type: object
       properties:
@@ -2232,6 +2306,26 @@ components:
             tx.type:
               type: string
               example: 08
+    UnconfirmedTxsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            n_txs:
+              type: string
+              example: '1'
+            txs:
+              type: array
+              items:
+                type: string
+                example: +JKCC9cBik1OVAAAAAAAAAAHt/agjwU/OALTP15wkrsBypmud2BvT691nHJWDV7mm44ZGlaKTU5UAAAAAAAAAIlSO1qu0qGWxiyAgAG4RfhDG6A1ZJqmHzkcTzLjLiFgWxf1MmnaU9uu7VCTcU/r819wraBZjjl3J+SQ2lAV07OrGoJ2Itc9sFJurRTgj/n2p5c8UA==
 paths:
   /address:
     get:
@@ -2489,3 +2583,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StatusResponse'
+  /transaction:
+    get:
+      summary: Transaction
+      description: Get transaction by hash
+      operationId: transaction
+      parameters:
+        - name: hash
+          in: query
+          description: Specify tx hash
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+  /transactions:
+    get:
+      summary: Transactions search
+      description: Search transactions
+      operationId: transactions
+      parameters:
+        - name: query
+          in: query
+          description: Specify query string
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+  /unconfirmed_txs:
+    get:
+      summary: Unconfirmed transactions
+      description: Unconfirmed transactions
+      operationId: unconfirmed_txs
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnconfirmedTxsResponse'
+  /validators:
+    get:
+      summary: Validators
+      description: Get information about validators
+      operationId: validators
+      parameters:
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatorsResponse'
