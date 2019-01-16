@@ -4,18 +4,18 @@ use GuzzleHttp\Exception\RequestException;
 
 $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
 
-// to get full balance
+// Get balance
 try {
     $response = $api->getBalance('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }
 
-// to get nonce of address
+// Get nonce of address
 try {
     $response = $api->getNonce('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }

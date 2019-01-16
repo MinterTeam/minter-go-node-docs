@@ -8,5 +8,5 @@ try {
     $response = $api->getStatus();
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }

@@ -8,5 +8,5 @@ try {
     $response = $api->getValidators();
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }

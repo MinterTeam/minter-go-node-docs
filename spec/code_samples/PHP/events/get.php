@@ -9,5 +9,5 @@ try {
     $response = $api->getEvents($height);
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }

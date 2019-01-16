@@ -12,5 +12,5 @@ try {
     $response = $api->estimateCoinSell($coinToSell, $valueToSell, $coinToBuy);
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }

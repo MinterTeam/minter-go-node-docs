@@ -9,5 +9,5 @@ try {
     $response = $api->getCandidate($publicKey);
     print_r($response);
 } catch(RequestException $exception) {
-    
+    // handle error
 }
