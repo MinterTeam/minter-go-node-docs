@@ -1,4 +1,4 @@
-theme:
-  colors:
-    primary:
-      main: '#32329f'
+hideDownloadButton: true
+expandResponses: true
+requiredPropsFirst: true
+onlyRequiredInSamples: true

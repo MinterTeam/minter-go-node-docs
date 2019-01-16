@@ -1,6 +1,6 @@
 get:
-  summary: Get information about candidates
-  description: ''
+  summary: Candidates
+  description: Get information about candidates
   operationId: candidates
   parameters:
     - name: height

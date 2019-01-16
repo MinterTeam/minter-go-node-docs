@@ -1,6 +1,6 @@
 get:
-  summary: Get balance and transaction count of given address
-  description: ''
+  summary: Address
+  description: Get balance and transaction count of given address
   operationId: address
   parameters:
     - name: address

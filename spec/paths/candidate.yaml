@@ -1,6 +1,6 @@
 get:
-  summary: Get information about candidate
-  description: ''
+  summary: Candidate
+  description: Get information about candidate
   operationId: candidate
   parameters:
     - name: pubkey

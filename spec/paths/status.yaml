@@ -1,6 +1,6 @@
 get:
-  summary: Get overall status of Minter Node
-  description: ''
+  summary: Status
+  description: Get overall status of Minter Node
   operationId: status
   responses:
     '200':

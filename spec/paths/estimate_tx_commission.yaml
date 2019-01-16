@@ -1,6 +1,6 @@
 get:
-  summary: Estimate tx commission
-  description: ''
+  summary: Estimate Tx Commission
+  description: Estimate tx commission
   operationId: estimate_tx_commission
   parameters:
     - name: tx

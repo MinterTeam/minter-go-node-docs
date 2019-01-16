@@ -1,6 +1,6 @@
 get:
-  summary: Get information about given block
-  description: ''
+  summary: Block
+  description: Get information about given block
   operationId: block
   parameters:
     - name: height

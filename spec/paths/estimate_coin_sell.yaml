@@ -1,6 +1,6 @@
 get:
-  summary: Estimate SellCoin operation
-  description: ''
+  summary: Estimate SellCoin
+  description: Estimate SellCoin operation
   operationId: estimate_coin_sell
   parameters:
     - name: coin_to_sell

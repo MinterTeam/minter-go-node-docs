@@ -1,6 +1,5 @@
 openapi: 3.0.0
 info:
-  description: ''
   version: 1.0.0
   title: Minter Node API
   contact:
@@ -8,6 +7,10 @@ info:
   license:
     name: MIT
     url: 'https://github.com/MinterTeam/minter-go-node/blob/master/LICENSE'
+  x-logo:
+    url: >-
+      https://github.com/MinterTeam/minter-go-node/raw/master/minter-logo.svg?sanitize=true
+    altText: Minter logo
 servers:
   - url: 'https://minter-node-1.testnet.minter.network:8841/'
     description: Minter Team testnet server

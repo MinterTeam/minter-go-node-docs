@@ -1,9 +1,6 @@
-specFileName: >-
-  /Users/daniillashin/go/src/github.com/MinterTeam/minter-go-node/docs/swagger/swagger.yaml
-apiTitle: Minter Go Node API
+swaggerUI: false
+oasVersion: '3.0.0'
 splitSpec: true
 codeSamples: true
-swaggerUI: false
 travis: true
 repo: MinterTeam/minter-go-node-api-docs
-oasVersion: '2.0'

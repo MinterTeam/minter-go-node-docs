@@ -1,6 +1,6 @@
 get:
-  summary: Get information about coin
-  description: ''
+  summary: Coin Info
+  description: Get information about coin
   operationId: coin
   parameters:
     - name: symbol
