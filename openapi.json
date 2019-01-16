@@ -2535,7 +2535,13 @@
           "500": {
             "$ref": "#/components/responses/Error"
           }
-        }
+        },
+        "x-code-samples": [
+          {
+            "lang": "PHP",
+            "source": "<?php\nuse Minter\\MinterAPI;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\nprint_r($api->getStatus());\n"
+          }
+        ]
       }
     },
     "/transaction": {
