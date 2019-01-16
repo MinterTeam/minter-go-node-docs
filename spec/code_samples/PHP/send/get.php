@@ -24,7 +24,7 @@ $tx = new MinterTx([
 
 // Sign tx
 $tx = $tx->sign('your private key');
-
+    
 try {
     $response = $api->send($tx);
     print_r($response);
