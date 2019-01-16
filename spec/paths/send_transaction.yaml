@@ -2,6 +2,8 @@ get:
   summary: Send Transaction
   description: Send Transaction
   operationId: send_transaction
+  tags:
+    - Node API
   parameters:
     - name: tx
       in: query

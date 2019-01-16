@@ -2,6 +2,8 @@ get:
   summary: Block
   description: Get information about given block
   operationId: block
+  tags:
+    - Node API
   parameters:
     - name: height
       in: query

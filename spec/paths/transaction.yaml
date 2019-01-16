@@ -2,6 +2,8 @@ get:
   summary: Transaction
   description: Get transaction by hash
   operationId: transaction
+  tags:
+    - Node API
   parameters:
     - name: hash
       in: query

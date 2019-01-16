@@ -2,6 +2,8 @@ get:
   summary: Coin Info
   description: Get information about coin
   operationId: coin
+  tags:
+    - Node API
   parameters:
     - name: symbol
       in: query

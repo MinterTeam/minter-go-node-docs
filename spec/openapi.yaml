@@ -1483,6 +1483,8 @@ info:
         pure PHP SDK for working with Minter blockchain
 
     ## Android SDK
+tags:
+  - name: Node API
 servers:
   - url: 'https://minter-node-1.testnet.minter.network:8841/'
     description: Minter Team testnet server

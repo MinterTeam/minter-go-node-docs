@@ -2,6 +2,8 @@ get:
   summary: Unconfirmed Transactions
   description: Unconfirmed Transactions
   operationId: unconfirmed_txs
+  tags:
+    - Node API
   parameters:
     - name: limit
       in: query

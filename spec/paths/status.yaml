@@ -2,6 +2,8 @@ get:
   summary: Status
   description: Get overall status of Minter Node
   operationId: status
+  tags:
+    - Node API
   responses:
     '200':
       description: Successful response

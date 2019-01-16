@@ -2,6 +2,8 @@ get:
   summary: Validators
   description: Get information about validators
   operationId: validators
+  tags:
+    - Node API
   parameters:
     - name: height
       in: query
