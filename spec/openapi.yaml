@@ -1706,6 +1706,30 @@ components:
               - $ref: '#/components/schemas/CreateMultisigTx'
               - $ref: '#/components/schemas/MultisendTx'
               - $ref: '#/components/schemas/EditCandidateTx'
+    SendTransactionResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 0
+            data:
+              type: string
+              example: ''
+            log:
+              type: string
+              example: ''
+            hash:
+              type: string
+              example: B8B2DA0955773B3CB7F86EFC2137A23CE98E5791D59071BA4BB9EF9DFB9D4014
     BuyCoinTx:
       type: object
       properties:

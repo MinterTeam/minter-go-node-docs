@@ -1,0 +1,18 @@
+get:
+  summary: Send transaction
+  description: Send transaction
+  operationId: send_transaction
+  parameters:
+    - name: tx
+      in: query
+      description: 'Tx to send, should start with 0x'
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SendTransactionResponse'
