@@ -1,7 +1,6 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "",
     "version": "1.0.0",
     "title": "Minter Node API",
     "contact": {
@@ -10,6 +9,10 @@
     "license": {
       "name": "MIT",
       "url": "https://github.com/MinterTeam/minter-go-node/blob/master/LICENSE"
+    },
+    "x-logo": {
+      "url": "https://github.com/MinterTeam/minter-go-node/raw/master/minter-logo.svg?sanitize=true",
+      "altText": "Minter logo"
     }
   },
   "servers": [
@@ -1627,8 +1630,8 @@
   "paths": {
     "/address": {
       "get": {
-        "summary": "Get balance and transaction count of given address",
-        "description": "",
+        "summary": "Address",
+        "description": "Get balance and transaction count of given address",
         "operationId": "address",
         "parameters": [
           {
@@ -1666,8 +1669,8 @@
     },
     "/block": {
       "get": {
-        "summary": "Get information about given block",
-        "description": "",
+        "summary": "Block",
+        "description": "Get information about given block",
         "operationId": "block",
         "parameters": [
           {
@@ -1696,8 +1699,8 @@
     },
     "/candidate": {
       "get": {
-        "summary": "Get information about candidate",
-        "description": "",
+        "summary": "Candidate",
+        "description": "Get information about candidate",
         "operationId": "candidate",
         "parameters": [
           {
@@ -1735,8 +1738,8 @@
     },
     "/candidates": {
       "get": {
-        "summary": "Get information about candidates",
-        "description": "",
+        "summary": "Candidates",
+        "description": "Get information about candidates",
         "operationId": "candidates",
         "parameters": [
           {
@@ -1765,8 +1768,8 @@
     },
     "/coin_info": {
       "get": {
-        "summary": "Get information about coin",
-        "description": "",
+        "summary": "Coin Info",
+        "description": "Get information about coin",
         "operationId": "coin",
         "parameters": [
           {
@@ -1804,8 +1807,8 @@
     },
     "/estimate_coin_buy": {
       "get": {
-        "summary": "Estimate BuyCoin operation",
-        "description": "",
+        "summary": "Estimate BuyCoin",
+        "description": "Estimate BuyCoin operation",
         "operationId": "estimate_coin_buy",
         "parameters": [
           {
@@ -1861,8 +1864,8 @@
     },
     "/estimate_coin_sell": {
       "get": {
-        "summary": "Estimate SellCoin operation",
-        "description": "",
+        "summary": "Estimate SellCoin",
+        "description": "Estimate SellCoin operation",
         "operationId": "estimate_coin_sell",
         "parameters": [
           {
@@ -1918,8 +1921,8 @@
     },
     "/estimate_tx_commission": {
       "get": {
-        "summary": "Estimate tx commission",
-        "description": "",
+        "summary": "Estimate Tx Commission",
+        "description": "Estimate tx commission",
         "operationId": "estimate_tx_commission",
         "parameters": [
           {
@@ -1948,8 +1951,8 @@
     },
     "/status": {
       "get": {
-        "summary": "Get overall status of Minter Node",
-        "description": "",
+        "summary": "Status",
+        "description": "Get overall status of Minter Node",
         "operationId": "status",
         "responses": {
           "200": {
