@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "version": "1.0.0",
+    "version": "0.10.0",
     "title": "Minter Node API",
     "contact": {
       "email": "dl@minter.org"
