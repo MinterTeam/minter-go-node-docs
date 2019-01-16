@@ -34,3 +34,5 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/EstimateCoinBuyResponse'
+    '500':
+      $ref: '#/components/responses/Error'

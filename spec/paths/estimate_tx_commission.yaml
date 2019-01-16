@@ -16,3 +16,5 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/EstimateTxCommissionResponse'
+    '500':
+      $ref: '#/components/responses/Error'

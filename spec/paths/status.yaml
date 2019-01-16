@@ -9,3 +9,5 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/StatusResponse'
+    '500':
+      $ref: '#/components/responses/Error'

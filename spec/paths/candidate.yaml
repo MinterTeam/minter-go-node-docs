@@ -22,3 +22,5 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/CandidateResponse'
+    '500':
+      $ref: '#/components/responses/Error'

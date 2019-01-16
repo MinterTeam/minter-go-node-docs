@@ -15,3 +15,5 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/UnconfirmedTxsResponse'
+    '500':
+      $ref: '#/components/responses/Error'
