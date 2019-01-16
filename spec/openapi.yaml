@@ -16,6 +16,80 @@ servers:
     description: Minter Team testnet server
 components:
   schemas:
+    EventsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            events:
+              type: array
+              items:
+                anyOf:
+                  - $ref: '#/components/schemas/RewardEvent'
+                  - $ref: '#/components/schemas/SlashEvent'
+    RewardEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          example: minter/RewardEvent
+        value:
+          type: object
+          properties:
+            role:
+              type: string
+              example: DAO
+            address:
+              type: string
+              example: Mxee81347211c72524338f9680072af90744333146
+            amount:
+              type: string
+              example: '99470365861103987235'
+            validator_pub_key:
+              type: string
+              example: >-
+                Mpb54df5b1abc46ecdb08935d6fc2f4526eba27caf1b6f2f87b3477ef3119bc0fd
+    SlashEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          example: minter/SlashEvent
+        value:
+          type: object
+          properties:
+            coin:
+              type: string
+              example: MNT
+            address:
+              type: string
+              example: Mxee81347211c72524338f9680072af90744333146
+            amount:
+              type: string
+              example: '99470365861103987235'
+            validator_pub_key:
+              type: string
+              example: >-
+                Mpb54df5b1abc46ecdb08935d6fc2f4526eba27caf1b6f2f87b3477ef3119bc0fd
+    MaxGasResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: string
+          example: '100000'
     AddressResponse:
       type: object
       properties:
