@@ -1,0 +1,18 @@
+get:
+  summary: Transaction
+  description: Get transaction by hash
+  operationId: transaction
+  parameters:
+    - name: hash
+      in: query
+      description: Specify tx hash
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransactionResponse'

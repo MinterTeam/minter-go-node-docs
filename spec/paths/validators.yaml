@@ -1,0 +1,18 @@
+get:
+  summary: Validators
+  description: Get information about validators
+  operationId: validators
+  parameters:
+    - name: height
+      in: query
+      description: Specify height
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidatorsResponse'

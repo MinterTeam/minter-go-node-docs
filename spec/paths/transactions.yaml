@@ -1,0 +1,18 @@
+get:
+  summary: Transactions search
+  description: Search transactions
+  operationId: transactions
+  parameters:
+    - name: query
+      in: query
+      description: Specify query string
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransactionsResponse'

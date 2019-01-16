@@ -1,0 +1,17 @@
+get:
+  summary: Unconfirmed transactions
+  description: Unconfirmed transactions
+  operationId: unconfirmed_txs
+  parameters:
+    - name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UnconfirmedTxsResponse'
