@@ -1,6 +1,6 @@
 get:
-  summary: Unconfirmed transactions
-  description: Unconfirmed transactions
+  summary: Unconfirmed Transactions
+  description: Unconfirmed Transactions
   operationId: unconfirmed_txs
   parameters:
     - name: limit

@@ -1,6 +1,6 @@
 get:
-  summary: Transactions search
-  description: Search transactions
+  summary: Transactions Search
+  description: Search Transactions
   operationId: transactions
   parameters:
     - name: query

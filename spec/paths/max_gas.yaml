@@ -1,5 +1,5 @@
 get:
-  summary: Max gas
+  summary: Max Gas
   description: Maximum available gas in block
   operationId: maxgas
   parameters:

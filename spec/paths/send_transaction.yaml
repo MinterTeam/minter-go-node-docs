@@ -1,6 +1,6 @@
 get:
-  summary: Send transaction
-  description: Send transaction
+  summary: Send Transaction
+  description: Send Transaction
   operationId: send_transaction
   parameters:
     - name: tx
