@@ -973,6 +973,35 @@ servers:
   - url: 'https://minter-node-1.testnet.minter.network:8841/'
     description: Minter Team testnet server
 components:
+  responses:
+    Error:
+      description: RPC error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jsonrpc:
+                type: string
+                example: '2.0'
+              id:
+                type: string
+                example: ''
+              result:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: -32602
+                    description: General error code
+                  message:
+                    type: string
+                    example: Invalid params
+                    description: Short description of an error
+                  data:
+                    type: string
+                    example: 'Error converting http params to arguments: invalid character looking for beginning of value'
+                    description: Full description of an error
   schemas:
     EventsResponse:
       type: object
@@ -2376,6 +2405,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AddressResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /block:
     get:
       summary: Block
@@ -2395,6 +2426,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlockResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /candidate:
     get:
       summary: Candidate
@@ -2420,6 +2453,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CandidateResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /candidates:
     get:
       summary: Candidates
@@ -2439,6 +2474,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CandidatesResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /coin_info:
     get:
       summary: Coin Info
@@ -2464,6 +2501,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CoinInfoResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /estimate_coin_buy:
     get:
       summary: Estimate BuyCoin
@@ -2501,6 +2540,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EstimateCoinBuyResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /estimate_coin_sell:
     get:
       summary: Estimate SellCoin
@@ -2538,6 +2579,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EstimateCoinSellResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /estimate_tx_commission:
     get:
       summary: Estimate Tx Commission
@@ -2557,6 +2600,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EstimateTxCommissionResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /events:
     get:
       summary: Events
@@ -2576,6 +2621,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/EventsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /max_gas:
     get:
       summary: Max gas
@@ -2595,6 +2642,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MaxGasResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /send_transaction:
     get:
       summary: Send transaction
@@ -2614,6 +2663,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SendTransactionResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /status:
     get:
       summary: Status
@@ -2626,6 +2677,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StatusResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /transaction:
     get:
       summary: Transaction
@@ -2645,6 +2698,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /transactions:
     get:
       summary: Transactions search
@@ -2664,6 +2719,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /unconfirmed_txs:
     get:
       summary: Unconfirmed transactions
@@ -2682,6 +2739,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnconfirmedTxsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /validators:
     get:
       summary: Validators
@@ -2701,3 +2760,5 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidatorsResponse'
+        '500':
+          $ref: '#/components/responses/Error'

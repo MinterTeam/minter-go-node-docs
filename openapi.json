@@ -23,6 +23,48 @@
     }
   ],
   "components": {
+    "responses": {
+      "Error": {
+        "description": "RPC error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jsonrpc": {
+                  "type": "string",
+                  "example": "2.0"
+                },
+                "id": {
+                  "type": "string",
+                  "example": ""
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": -32602,
+                      "description": "General error code"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid params",
+                      "description": "Short description of an error"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": "Error converting http params to arguments: invalid character looking for beginning of value",
+                      "description": "Full description of an error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "schemas": {
       "EventsResponse": {
         "type": "object",
@@ -2065,6 +2107,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2095,6 +2140,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2134,6 +2182,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2164,6 +2215,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2203,6 +2257,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2260,6 +2317,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2317,6 +2377,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2347,6 +2410,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2377,6 +2443,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2407,6 +2476,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2437,6 +2509,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2456,6 +2531,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2486,6 +2564,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2516,6 +2597,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2545,6 +2629,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
@@ -2575,6 +2662,9 @@
                 }
               }
             }
+          },
+          "500": {
+            "$ref": "#/components/responses/Error"
           }
         }
       }
