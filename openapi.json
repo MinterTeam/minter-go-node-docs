@@ -374,100 +374,126 @@
       "CandidateResponse": {
         "type": "object",
         "properties": {
-          "reward_address": {
+          "jsonrpc": {
             "type": "string",
-            "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+            "example": "2.0"
           },
-          "owner_address": {
+          "id": {
             "type": "string",
-            "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+            "example": ""
           },
-          "total_stake": {
-            "type": "string",
-            "example": "209369045801925559657593"
-          },
-          "pubkey": {
-            "type": "string",
-            "example": "Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d"
-          },
-          "commission": {
-            "type": "string",
-            "example": "10"
-          },
-          "stakes": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "owner": {
-                  "type": "string",
-                  "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
-                },
-                "coin": {
-                  "type": "string",
-                  "example": "MNT"
-                },
-                "value": {
-                  "type": "string",
-                  "example": "1000000000000000000"
-                },
-                "bip_value": {
-                  "type": "string",
-                  "example": "1000000000000000000"
+          "result": {
+            "type": "object",
+            "properties": {
+              "reward_address": {
+                "type": "string",
+                "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+              },
+              "owner_address": {
+                "type": "string",
+                "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+              },
+              "total_stake": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              },
+              "pubkey": {
+                "type": "string",
+                "example": "Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d"
+              },
+              "commission": {
+                "type": "string",
+                "example": "10"
+              },
+              "stakes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "owner": {
+                      "type": "string",
+                      "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+                    },
+                    "coin": {
+                      "type": "string",
+                      "example": "MNT"
+                    },
+                    "value": {
+                      "type": "string",
+                      "example": "1000000000000000000"
+                    },
+                    "bip_value": {
+                      "type": "string",
+                      "example": "1000000000000000000"
+                    }
+                  }
                 }
+              },
+              "created_at_block": {
+                "type": "string",
+                "example": "10"
+              },
+              "status": {
+                "type": "integer",
+                "enum": [
+                  1,
+                  2
+                ],
+                "example": 1
               }
             }
-          },
-          "created_at_block": {
-            "type": "string",
-            "example": "10"
-          },
-          "status": {
-            "type": "integer",
-            "enum": [
-              1,
-              2
-            ],
-            "example": 1
           }
         }
       },
       "CandidatesResponse": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "reward_address": {
-              "type": "string",
-              "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
-            },
-            "owner_address": {
-              "type": "string",
-              "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
-            },
-            "total_stake": {
-              "type": "string",
-              "example": "209369045801925559657593"
-            },
-            "pubkey": {
-              "type": "string",
-              "example": "Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d"
-            },
-            "commission": {
-              "type": "string",
-              "example": "10"
-            },
-            "created_at_block": {
-              "type": "string",
-              "example": "10"
-            },
-            "status": {
-              "type": "integer",
-              "enum": [
-                1,
-                2
-              ],
-              "example": 1
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "example": "2.0"
+          },
+          "id": {
+            "type": "string",
+            "example": ""
+          },
+          "result": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "reward_address": {
+                  "type": "string",
+                  "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+                },
+                "owner_address": {
+                  "type": "string",
+                  "example": "Mx190fd0ad9fce4878ff7a6776a2692114e9838a34"
+                },
+                "total_stake": {
+                  "type": "string",
+                  "example": "209369045801925559657593"
+                },
+                "pubkey": {
+                  "type": "string",
+                  "example": "Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d"
+                },
+                "commission": {
+                  "type": "string",
+                  "example": "10"
+                },
+                "created_at_block": {
+                  "type": "string",
+                  "example": "10"
+                },
+                "status": {
+                  "type": "integer",
+                  "enum": [
+                    1,
+                    2
+                  ],
+                  "example": 1
+                }
+              }
             }
           }
         }
@@ -475,25 +501,38 @@
       "CoinInfoResponse": {
         "type": "object",
         "properties": {
-          "name": {
+          "jsonrpc": {
             "type": "string",
-            "example": "ABC Coin"
+            "example": "2.0"
           },
-          "symbol": {
+          "id": {
             "type": "string",
-            "example": "ABC"
+            "example": ""
           },
-          "volume": {
-            "type": "string",
-            "example": "209369045801925559657593"
-          },
-          "crr": {
-            "type": "string",
-            "example": "50"
-          },
-          "reserve_balance": {
-            "type": "string",
-            "example": "209369045801925559657593"
+          "result": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "ABC Coin"
+              },
+              "symbol": {
+                "type": "string",
+                "example": "ABC"
+              },
+              "volume": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              },
+              "crr": {
+                "type": "string",
+                "example": "50"
+              },
+              "reserve_balance": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              }
+            }
           }
         }
       },
@@ -909,35 +948,74 @@
       "EstimateCoinBuyResponse": {
         "type": "object",
         "properties": {
-          "will_pay": {
+          "jsonrpc": {
             "type": "string",
-            "example": "209369045801925559657593"
+            "example": "2.0"
           },
-          "commission": {
+          "id": {
             "type": "string",
-            "example": "209369045801925559657593"
+            "example": ""
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "will_pay": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              },
+              "commission": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              }
+            }
           }
         }
       },
       "EstimateCoinSellResponse": {
         "type": "object",
         "properties": {
-          "will_get": {
+          "jsonrpc": {
             "type": "string",
-            "example": "209369045801925559657593"
+            "example": "2.0"
           },
-          "commission": {
+          "id": {
             "type": "string",
-            "example": "209369045801925559657593"
+            "example": ""
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "will_get": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              },
+              "commission": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              }
+            }
           }
         }
       },
       "EstimateTxCommissionResponse": {
         "type": "object",
         "properties": {
-          "commission": {
+          "jsonrpc": {
             "type": "string",
-            "example": "209369045801925559657593"
+            "example": "2.0"
+          },
+          "id": {
+            "type": "string",
+            "example": ""
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "commission": {
+                "type": "string",
+                "example": "209369045801925559657593"
+              }
+            }
           }
         }
       },
