@@ -3,4 +3,4 @@ oasVersion: '3.0.0'
 splitSpec: true
 codeSamples: true
 travis: true
-repo: MinterTeam/minter-go-node-api-docs
+repo: MinterTeam/minter-go-node-docs
