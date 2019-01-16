@@ -2505,8 +2505,8 @@ paths:
           $ref: '#/components/responses/Error'
   /estimate_coin_buy:
     get:
-      summary: Estimate BuyCoin
-      description: Estimate BuyCoin operation
+      summary: Estimate Buy Coin
+      description: Estimate Buy Coin operation
       operationId: estimate_coin_buy
       parameters:
         - name: coin_to_sell
@@ -2544,8 +2544,8 @@ paths:
           $ref: '#/components/responses/Error'
   /estimate_coin_sell:
     get:
-      summary: Estimate SellCoin
-      description: Estimate SellCoin operation
+      summary: Estimate Sell Coin
+      description: Estimate Sell Coin operation
       operationId: estimate_coin_sell
       parameters:
         - name: coin_to_sell
@@ -2625,7 +2625,7 @@ paths:
           $ref: '#/components/responses/Error'
   /max_gas:
     get:
-      summary: Max gas
+      summary: Max Gas
       description: Maximum available gas in block
       operationId: maxgas
       parameters:
@@ -2646,8 +2646,8 @@ paths:
           $ref: '#/components/responses/Error'
   /send_transaction:
     get:
-      summary: Send transaction
-      description: Send transaction
+      summary: Send Transaction
+      description: Send Transaction
       operationId: send_transaction
       parameters:
         - name: tx
@@ -2702,8 +2702,8 @@ paths:
           $ref: '#/components/responses/Error'
   /transactions:
     get:
-      summary: Transactions search
-      description: Search transactions
+      summary: Transactions Search
+      description: Search Transactions
       operationId: transactions
       parameters:
         - name: query
@@ -2723,8 +2723,8 @@ paths:
           $ref: '#/components/responses/Error'
   /unconfirmed_txs:
     get:
-      summary: Unconfirmed transactions
-      description: Unconfirmed transactions
+      summary: Unconfirmed Transactions
+      description: Unconfirmed Transactions
       operationId: unconfirmed_txs
       parameters:
         - name: limit

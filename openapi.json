@@ -2266,8 +2266,8 @@
     },
     "/estimate_coin_buy": {
       "get": {
-        "summary": "Estimate BuyCoin",
-        "description": "Estimate BuyCoin operation",
+        "summary": "Estimate Buy Coin",
+        "description": "Estimate Buy Coin operation",
         "operationId": "estimate_coin_buy",
         "parameters": [
           {
@@ -2326,8 +2326,8 @@
     },
     "/estimate_coin_sell": {
       "get": {
-        "summary": "Estimate SellCoin",
-        "description": "Estimate SellCoin operation",
+        "summary": "Estimate Sell Coin",
+        "description": "Estimate Sell Coin operation",
         "operationId": "estimate_coin_sell",
         "parameters": [
           {
@@ -2452,7 +2452,7 @@
     },
     "/max_gas": {
       "get": {
-        "summary": "Max gas",
+        "summary": "Max Gas",
         "description": "Maximum available gas in block",
         "operationId": "maxgas",
         "parameters": [
@@ -2485,8 +2485,8 @@
     },
     "/send_transaction": {
       "get": {
-        "summary": "Send transaction",
-        "description": "Send transaction",
+        "summary": "Send Transaction",
+        "description": "Send Transaction",
         "operationId": "send_transaction",
         "parameters": [
           {
@@ -2573,8 +2573,8 @@
     },
     "/transactions": {
       "get": {
-        "summary": "Transactions search",
-        "description": "Search transactions",
+        "summary": "Transactions Search",
+        "description": "Search Transactions",
         "operationId": "transactions",
         "parameters": [
           {
@@ -2606,8 +2606,8 @@
     },
     "/unconfirmed_txs": {
       "get": {
-        "summary": "Unconfirmed transactions",
-        "description": "Unconfirmed transactions",
+        "summary": "Unconfirmed Transactions",
+        "description": "Unconfirmed Transactions",
         "operationId": "unconfirmed_txs",
         "parameters": [
           {
