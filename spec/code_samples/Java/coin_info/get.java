@@ -2,13 +2,11 @@ package network.minter.blockchain.samples.coin_info;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import network.minter.blockchain.MinterBlockChainApi;
 import network.minter.blockchain.models.BCResult;
-import network.minter.blockchain.models.BlockInfo;
 import network.minter.blockchain.models.Coin;
-import network.minter.blockchain.repo.BlockChainBlockRepository;
 import network.minter.blockchain.repo.BlockChainCoinRepository;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -24,9 +22,9 @@ public class get {
 
         request.enqueue(new Callback<BCResult<Coin>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<Coin>> call, @NotNull Response<BCResult<Coin>> response) {
+            public void onResponse(@Nonnull Call<BCResult<Coin>> call, @Nonnull Response<BCResult<Coin>> response) {
                 BCResult<Coin> body = response.body();
-                if(body.isOk()) {
+                if (body.isOk()) {
                     // do something with body.result
                 } else {
                     Log.d("MinterError", body.error.getMessage());
@@ -34,7 +32,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<Coin>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<Coin>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });

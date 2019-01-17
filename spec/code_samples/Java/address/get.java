@@ -2,7 +2,7 @@ package network.minter.blockchain.samples.address;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import network.minter.blockchain.MinterBlockChainApi;
 import network.minter.blockchain.models.BCResult;
@@ -23,9 +23,9 @@ public class get {
 
         request.enqueue(new Callback<BCResult<Balance>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<Balance>> call, @NotNull Response<BCResult<Balance>> response) {
+            public void onResponse(@Nonnull Call<BCResult<Balance>> call, @Nonnull Response<BCResult<Balance>> response) {
                 BCResult<Balance> body = response.body();
-                if(body.isOk()) {
+                if (body.isOk()) {
                     // do something with body.result
                 } else {
                     Log.d("MinterError", body.error.getMessage());
@@ -33,7 +33,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<Balance>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<Balance>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });

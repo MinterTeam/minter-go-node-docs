@@ -2,7 +2,7 @@ package network.minter.blockchain.samples.unconfirmed_txs;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import network.minter.blockchain.MinterBlockChainApi;
 import network.minter.blockchain.models.BCResult;
@@ -24,7 +24,7 @@ public class get {
 
         request.enqueue(new Callback<BCResult<UnconfirmedTransactions>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<UnconfirmedTransactions>> call, @NotNull Response<BCResult<UnconfirmedTransactions>> response) {
+            public void onResponse(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Response<BCResult<UnconfirmedTransactions>> response) {
                 BCResult<UnconfirmedTransactions> body = response.body();
                 if (body.isOk()) {
                     /*
@@ -38,7 +38,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<UnconfirmedTransactions>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });

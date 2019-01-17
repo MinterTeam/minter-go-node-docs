@@ -2,9 +2,9 @@ package network.minter.blockchain.samples.transactions;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import network.minter.blockchain.MinterBlockChainApi;
 import network.minter.blockchain.models.BCResult;
@@ -30,7 +30,7 @@ public class get {
 
         request.enqueue(new Callback<BCResult<List<HistoryTransaction>>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<List<HistoryTransaction>>> call, @NotNull Response<BCResult<List<HistoryTransaction>>> response) {
+            public void onResponse(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Response<BCResult<List<HistoryTransaction>>> response) {
                 BCResult<List<HistoryTransaction>> body = response.body();
                 if (body.isOk()) {
                     // do something with body.result
@@ -40,7 +40,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<List<HistoryTransaction>>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });

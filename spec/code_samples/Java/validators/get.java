@@ -2,9 +2,9 @@ package network.minter.blockchain.samples.validators;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import network.minter.blockchain.MinterBlockChainApi;
 import network.minter.blockchain.models.BCResult;
@@ -25,9 +25,9 @@ public class get {
 
         request.enqueue(new Callback<BCResult<List<NetworkStatus.Validator>>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<List<NetworkStatus.Validator>>> call, @NotNull Response<BCResult<List<NetworkStatus.Validator>>> response) {
+            public void onResponse(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Response<BCResult<List<NetworkStatus.Validator>>> response) {
                 BCResult<List<NetworkStatus.Validator>> body = response.body();
-                if(body.isOk()) {
+                if (body.isOk()) {
                     // do something with body.result
                 } else {
                     Log.d("MinterError", body.error.getMessage());
@@ -35,7 +35,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<List<NetworkStatus.Validator>>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });

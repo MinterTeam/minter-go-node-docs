@@ -2,7 +2,7 @@ package network.minter.blockchain.samples.candidate;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
+import javax.annotation.Nonnull;
 
 import network.minter.blockchain.MinterBlockChainApi;
 import network.minter.blockchain.models.BCResult;
@@ -26,9 +26,9 @@ public class get {
 
         requestByPubKey.enqueue(new Callback<BCResult<CandidateItem>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<CandidateItem>> call, @NotNull Response<BCResult<CandidateItem>> response) {
+            public void onResponse(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Response<BCResult<CandidateItem>> response) {
                 BCResult<CandidateItem> body = response.body();
-                if(body.isOk()) {
+                if (body.isOk()) {
                     // do something with body.result
                 } else {
                     Log.d("MinterError", body.error.getMessage());
@@ -36,7 +36,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<CandidateItem>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });
@@ -49,9 +49,9 @@ public class get {
 
         requestByPubKeyAndHeight.enqueue(new Callback<BCResult<CandidateItem>>() {
             @Override
-            public void onResponse(@NotNull Call<BCResult<CandidateItem>> call, @NotNull Response<BCResult<CandidateItem>> response) {
+            public void onResponse(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Response<BCResult<CandidateItem>> response) {
                 BCResult<CandidateItem> body = response.body();
-                if(body.isOk()) {
+                if (body.isOk()) {
                     // do something with body.result
                 } else {
                     Log.d("MinterError", body.error.getMessage());
@@ -59,7 +59,7 @@ public class get {
             }
 
             @Override
-            public void onFailure(@NotNull Call<BCResult<CandidateItem>> call, @NotNull Throwable t) {
+            public void onFailure(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Throwable t) {
                 // handle error
             }
         });
