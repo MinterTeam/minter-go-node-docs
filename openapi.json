@@ -44,7 +44,7 @@
                   "type": "string",
                   "example": ""
                 },
-                "result": {
+                "error": {
                   "type": "object",
                   "properties": {
                     "code": {
@@ -495,7 +495,7 @@
             "type": "string",
             "example": ""
           },
-          "result": {
+          "error": {
             "type": "object",
             "properties": {
               "code": {
