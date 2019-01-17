@@ -2420,6 +2420,10 @@
         },
         "x-code-samples": [
           {
+            "lang": "JavaScript",
+            "source": "import {Minter, SendTxParams, API_TYPE_NODE} from \"minter-js-sdk\";\n\nconst minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});\n\nminterSDK.estimateCoinBuy({\n        coinToSell: 'MNT',\n        valueToBuy: 1,\n        coinToBuy: 'ASDCOIN',\n    })\n    .then((estimateResult) => {\n        console.log(estimateResult.will_pay);\n        console.log(estimateResult.commission);\n    })\n    .catch((error) => {\n        const errorMessage = error.response.data.error.message;\n        console.log(errorMessage);\n    });\n"
+          },
+          {
             "lang": "PHP",
             "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $coinToSell = 'TESTCOIN';\n    $coinToBuy = 'MNT';\n    $valueToBuy = '10.5';\n\n    $response = $api->estimateCoinBuy($coinToSell, $valueToBuy, $coinToBuy);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
           }
@@ -2489,6 +2493,10 @@
         },
         "x-code-samples": [
           {
+            "lang": "JavaScript",
+            "source": "import {Minter, SendTxParams, API_TYPE_NODE} from \"minter-js-sdk\";\n\nconst minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});\n\nminterSDK.estimateCoinSell({\n        coinToSell: 'MNT',\n        valueToSell: 1,\n        coinToBuy: 'ASDCOIN',\n    })\n    .then((estimateResult) => {\n        console.log(estimateResult.will_get);\n        console.log(estimateResult.commission);\n    })\n    .catch((error) => {\n        const errorMessage = error.response.data.error.message;\n        console.log(errorMessage);\n    });\n"
+          },
+          {
             "lang": "PHP",
             "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $coinToSell = 'MNT';\n    $coinToBuy = 'TESTCOIN';\n    $valueToSell = '10.5';\n\n    $response = $api->estimateCoinSell($coinToSell, $valueToSell, $coinToBuy);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
           }
@@ -2530,6 +2538,10 @@
           }
         },
         "x-code-samples": [
+          {
+            "lang": "JavaScript",
+            "source": "import {Minter, SendTxParams, API_TYPE_NODE} from \"minter-js-sdk\";\n\nconst minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});\nconst rawTx = 'f8911a018a4d4e540000000000000001aae98a4d4e5400000000000000947633980c000139dd3bd24a3f54e06474fa941e16888ac7230489e800008e637573746f6d206d6573736167658001b845f8431ca0c0716faaac63263c8c6106fa17f863eec2de60431214dd8d775147d4ed972410a05f881fb3938acf69a0a7eb761e5479fbbd60780e1db0c85a0670150eb7b070ab';\n\nminterSDK.estimateTxCommission({\n        transaction: rawTx,\n    })\n    .then((commission) => {\n        console.log(commission);\n    })\n    .catch((error) => {\n        const errorMessage = error.response.data.error.message;\n        console.log(errorMessage);\n    });\n\n\n"
+          },
           {
             "lang": "PHP",
             "source": "<?php\nuse Minter\\MinterAPI;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\ntry {\n    $tx = '0x...';\n    $response = $api->estimateTxCommission($tx);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}\n"
@@ -2660,6 +2672,10 @@
           }
         },
         "x-code-samples": [
+          {
+            "lang": "JavaScript",
+            "source": "import {Minter, SendTxParams, API_TYPE_NODE} from \"minter-js-sdk\";\n\nconst minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});\nconst txParams = new SendTxParams({\n    privateKey: '5fa3a8b186f6cc2d748ee2d8c0eb7a905a7b73de0f2c34c5e7857c3b46f187da',\n    address: 'Mx7633980c000139dd3bd24a3f54e06474fa941e16',\n    amount: 10,\n    coinSymbol: 'MNT',\n    feeCoinSymbol: 'ASD',\n    message: 'custom message',\n});\n\nminterSDK.postTx(txParams)\n    .then((txHash) => {\n        console.log(`Tx created: ${txHash}`);\n    })\n    .catch((error) => {\n        const errorMessage = error.response.data.error.message;\n        console.log(errorMessage);\n    });\n"
+          },
           {
             "lang": "PHP",
             "source": "<?php\nuse Minter\\MinterAPI;\nuse Minter\\SDK\\MinterTx;\nuse Minter\\SDK\\MinterCoins\\MinterSendCoinTx;\nuse GuzzleHttp\\Exception\\RequestException;\n\n$api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');\n\n// Construct tx\n$tx = new MinterTx([\n    'nonce' => $api->getNonce('sender address here'),\n    'gasPrice' => 1,\n    'gasCoin' => 'MNT',\n    'type' => MinterSendCoinTx::TYPE,\n    'data' => [\n        'coin' => 'MTN',\n        'to' => 'receiver address here',\n        'value' => '10'\n    ],\n    'payload' => '',\n    'serviceData' => '',\n    'signatureType' => MinterTx::SIGNATURE_SINGLE_TYPE\n]);\n\n// Sign tx\n$tx = $tx->sign('your private key');\n    \ntry {\n    $response = $api->send($tx);\n    print_r($response);\n} catch(RequestException $exception) {\n    // handle error\n}"
