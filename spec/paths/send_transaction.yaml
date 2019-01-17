@@ -18,5 +18,11 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/SendTransactionResponse'
+    '412':
+      description: Tx check error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SendTransactionErrorResponse'
     '500':
       $ref: '#/components/responses/Error'
