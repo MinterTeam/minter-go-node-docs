@@ -1243,6 +1243,37 @@ components:
             hash:
               type: string
               example: B8B2DA0955773B3CB7F86EFC2137A23CE98E5791D59071BA4BB9EF9DFB9D4014
+    SendTransactionErrorResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 412
+              description: General error code
+            message:
+              type: string
+              example: Check tx error
+              description: Short description of an error
+            tx_result:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  example: 101
+                  description: Tx error code
+                log:
+                  type: string
+                  description: Full description of tx checking error
+                  example: 'Unexpected nonce. Expected: 1, got 2.'
     BuyCoinTx:
       type: object
       properties:
@@ -2845,6 +2876,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SendTransactionResponse'
+        '412':
+          description: Tx check error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTransactionErrorResponse'
         '500':
           $ref: '#/components/responses/Error'
       x-code-samples:
