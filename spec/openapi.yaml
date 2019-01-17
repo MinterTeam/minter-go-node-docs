@@ -1503,7 +1503,7 @@ components:
               id:
                 type: string
                 example: ''
-              result:
+              error:
                 type: object
                 properties:
                   code:
@@ -1772,7 +1772,7 @@ components:
         id:
           type: string
           example: ''
-        result:
+        error:
           type: object
           properties:
             code:
