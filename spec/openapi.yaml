@@ -1685,6 +1685,32 @@ components:
                   signed:
                     type: boolean
                     example: true
+    BlockNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Block not found
+              description: Short description of an error
+            data:
+              type: string
+              example: >-
+                Height must be less than or equal to the current blockchain
+                height
+              description: Full description of an error
     TransactionResponse:
       type: object
       properties:
@@ -1915,6 +1941,26 @@ components:
                 - 1
                 - 2
               example: 1
+    CandidateNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Candidate not found
+              description: Short description of an error
     CandidatesResponse:
       type: object
       properties:

@@ -18,5 +18,11 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/BlockResponse'
+    '404':
+      description: Block not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BlockNotFoundResponse'
     '500':
       $ref: '#/components/responses/Error'
