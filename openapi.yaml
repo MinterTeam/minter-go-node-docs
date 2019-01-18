@@ -2488,48 +2488,28 @@ paths:
           $ref: '#/components/responses/Error'
       x-code-samples:
         - lang: Java
-          source: |
-            package network.minter.blockchain.samples.address;
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainAccountRepository repository = MinterBlockChainApi.getInstance().account();
+            Call<BCResult<Balance>> request = repository.getBalance("Mx618ed05277e7568ee943cd1b8e22ced4cf873f95");
 
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.Balance;
-            import network.minter.blockchain.repo.BlockChainAccountRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainAccountRepository repository = MinterBlockChainApi.getInstance().account();
-                    Call<BCResult<Balance>> request = repository.getBalance("Mx618ed05277e7568ee943cd1b8e22ced4cf873f95");
-
-                    request.enqueue(new Callback<BCResult<Balance>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<Balance>> call, @Nonnull Response<BCResult<Balance>> response) {
-                            BCResult<Balance> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<Balance>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<Balance>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<Balance>> call, @Nonnull Response<BCResult<Balance>> response) {
+                    BCResult<Balance> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<Balance>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -2586,48 +2566,28 @@ paths:
           $ref: '#/components/responses/Error'
       x-code-samples:
         - lang: Java
-          source: |
-            package network.minter.blockchain.samples.block;
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainBlockRepository repository = MinterBlockChainApi.getInstance().block();
+            Call<BCResult<BlockInfo>> request = repository.getByHeight(1);
 
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.BlockInfo;
-            import network.minter.blockchain.repo.BlockChainBlockRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainBlockRepository repository = MinterBlockChainApi.getInstance().block();
-                    Call<BCResult<BlockInfo>> request = repository.getByHeight(1);
-
-                    request.enqueue(new Callback<BCResult<BlockInfo>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<BlockInfo>> call, @Nonnull Response<BCResult<BlockInfo>> response) {
-                            BCResult<BlockInfo> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<BlockInfo>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<BlockInfo>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<BlockInfo>> call, @Nonnull Response<BCResult<BlockInfo>> response) {
+                    BCResult<BlockInfo> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<BlockInfo>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -2683,73 +2643,29 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.candidate;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainCandidateRepository repository = MinterBlockChainApi.getInstance().candidate();
 
-            import javax.annotation.Nonnull;
+            // Get candidate by Public Key
+            Call<BCResult<CandidateItem>> requestByPubKey = repository.getCandidate(new MinterPublicKey("Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0"));
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.CandidateItem;
-            import network.minter.blockchain.repo.BlockChainCandidateRepository;
-            import network.minter.core.crypto.MinterPublicKey;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainCandidateRepository repository = MinterBlockChainApi.getInstance().candidate();
-
-                    // Get candidate by Public Key
-                    Call<BCResult<CandidateItem>> requestByPubKey = repository.getCandidate(new MinterPublicKey("Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0"));
-
-                    requestByPubKey.enqueue(new Callback<BCResult<CandidateItem>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Response<BCResult<CandidateItem>> response) {
-                            BCResult<CandidateItem> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
-
-                    // Get candidate by Public Key and block height
-                    Call<BCResult<CandidateItem>> requestByPubKeyAndHeight = repository.getCandidate(
-                            new MinterPublicKey("Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0"),
-                            100
-                    );
-
-                    requestByPubKeyAndHeight.enqueue(new Callback<BCResult<CandidateItem>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Response<BCResult<CandidateItem>> response) {
-                            BCResult<CandidateItem> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            requestByPubKey.enqueue(new Callback<BCResult<CandidateItem>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Response<BCResult<CandidateItem>> response) {
+                    BCResult<CandidateItem> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -2793,51 +2709,29 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.candidates;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainCandidateRepository repository = MinterBlockChainApi.getInstance().candidate();
 
-            import java.util.List;
+            // Get candidate by public key
+            Call<BCResult<List<CandidateStatus>>> request = repository.getBlockCandidates(100);
 
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.CandidateStatus;
-            import network.minter.blockchain.repo.BlockChainCandidateRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainCandidateRepository repository = MinterBlockChainApi.getInstance().candidate();
-
-                    // Get candidate by Public Key
-                    Call<BCResult<List<CandidateStatus>>> request = repository.getBlockCandidates(100);
-
-                    request.enqueue(new Callback<BCResult<List<CandidateStatus>>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<List<CandidateStatus>>> call, @Nonnull Response<BCResult<List<CandidateStatus>>> response) {
-                            BCResult<List<CandidateStatus>> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<List<CandidateStatus>>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<List<CandidateStatus>>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<List<CandidateStatus>>> call, @Nonnull Response<BCResult<List<CandidateStatus>>> response) {
+                    BCResult<List<CandidateStatus>> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<List<CandidateStatus>>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -2886,47 +2780,29 @@ paths:
           $ref: '#/components/responses/Error'
       x-code-samples:
         - lang: Java
-          source: |
-            package network.minter.blockchain.samples.coin_info;
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
+            Call<BCResult<Coin>> request = repository.getCoinInfo("TESTCOIN");
 
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.Coin;
-            import network.minter.blockchain.repo.BlockChainCoinRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
-                    Call<BCResult<Coin>> request = repository.getCoinInfo("TESTCOIN");
-
-                    request.enqueue(new Callback<BCResult<Coin>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<Coin>> call, @Nonnull Response<BCResult<Coin>> response) {
-                            BCResult<Coin> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<Coin>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<Coin>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<Coin>> call, @Nonnull Response<BCResult<Coin>> response) {
+                    BCResult<Coin> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<Coin>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+             
         - lang: PHP
           source: |
             <?php
@@ -2987,53 +2863,31 @@ paths:
           $ref: '#/components/responses/Error'
       x-code-samples:
         - lang: Java
-          source: |
-            package network.minter.blockchain.samples.estimate_coin_buy;
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
+            Call<BCResult<ExchangeBuyValue>> request = repository.getCoinExchangeCurrencyToBuy(
+                    "MNT",
+                    new BigDecimal("10"),
+                    "TESTCOIN");
 
-            import java.math.BigDecimal;
-
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.ExchangeBuyValue;
-            import network.minter.blockchain.repo.BlockChainCoinRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
-                    Call<BCResult<ExchangeBuyValue>> request = repository.getCoinExchangeCurrencyToBuy(
-                            "MNT",
-                            new BigDecimal("10"),
-                            "TESTCOIN");
-
-
-                    request.enqueue(new Callback<BCResult<ExchangeBuyValue>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<ExchangeBuyValue>> call, @Nonnull Response<BCResult<ExchangeBuyValue>> response) {
-                            BCResult<ExchangeBuyValue> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<ExchangeBuyValue>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<ExchangeBuyValue>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<ExchangeBuyValue>> call, @Nonnull Response<BCResult<ExchangeBuyValue>> response) {
+                    BCResult<ExchangeBuyValue> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<ExchangeBuyValue>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: JavaScript
           source: |
             import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
@@ -3117,52 +2971,30 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.estimate_coin_sell;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
+            Call<BCResult<ExchangeSellValue>> request = repository.getCoinExchangeCurrencyToSell(
+                    "MNT",
+                    new BigDecimal("10"),
+                    "TESTCOIN");
 
-            import java.math.BigDecimal;
-
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.ExchangeSellValue;
-            import network.minter.blockchain.repo.BlockChainCoinRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
-                    Call<BCResult<ExchangeSellValue>> request = repository.getCoinExchangeCurrencyToSell(
-                            "MNT",
-                            new BigDecimal("10"),
-                            "TESTCOIN");
-
-
-                    request.enqueue(new Callback<BCResult<ExchangeSellValue>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<ExchangeSellValue>> call, @Nonnull Response<BCResult<ExchangeSellValue>> response) {
-                            BCResult<ExchangeSellValue> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<ExchangeSellValue>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<ExchangeSellValue>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<ExchangeSellValue>> call, @Nonnull Response<BCResult<ExchangeSellValue>> response) {
+                    BCResult<ExchangeSellValue> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<ExchangeSellValue>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: JavaScript
           source: |
             import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
@@ -3228,49 +3060,29 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.estimate_tx_commission;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
 
-            import javax.annotation.Nonnull;
+            String sign = "..."; // signed transaction hash started without 0x
+            Call<BCResult<TransactionCommissionValue>> request = repository.getTransactionCommission("");
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.TransactionCommissionValue;
-            import network.minter.blockchain.repo.BlockChainTransactionRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
-
-                    String sign = "..."; // signed transaction hash started without 0x
-                    Call<BCResult<TransactionCommissionValue>> request = repository.getTransactionCommission("");
-
-
-                    request.enqueue(new Callback<BCResult<TransactionCommissionValue>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<TransactionCommissionValue>> call, @Nonnull Response<BCResult<TransactionCommissionValue>> response) {
-                            BCResult<TransactionCommissionValue> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<TransactionCommissionValue>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<TransactionCommissionValue>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<TransactionCommissionValue>> call, @Nonnull Response<BCResult<TransactionCommissionValue>> response) {
+                    BCResult<TransactionCommissionValue> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<TransactionCommissionValue>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: JavaScript
           source: |+
             import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
@@ -3332,52 +3144,32 @@ paths:
           $ref: '#/components/responses/Error'
       x-code-samples:
         - lang: Java
-          source: |
-            package network.minter.blockchain.samples.events;
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainEventRepository repository = MinterBlockChainApi.getInstance().event();
 
-            import javax.annotation.Nonnull;
+            long blockHeight = 1;
+            Call<BCResult<EventList>> request = repository.getEvents(blockHeight);
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.EventList;
-            import network.minter.blockchain.models.operational.OperationInvalidDataException;
-            import network.minter.blockchain.repo.BlockChainEventRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) throws OperationInvalidDataException {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainEventRepository repository = MinterBlockChainApi.getInstance().event();
-
-                    long blockHeight = 1;
-                    Call<BCResult<EventList>> request = repository.getEvents(blockHeight);
-
-                    request.enqueue(new Callback<BCResult<EventList>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<EventList>> call, @Nonnull Response<BCResult<EventList>> response) {
-                            BCResult<EventList> body = response.body();
-                            if (body.isOk()) {
-                                // EventList.RewardEvent event = body.result.events.get(0).getValue();
-                                // EventList.SlashEvent event = body.result.events.get(1).getValue();
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<EventList>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<EventList>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<EventList>> call, @Nonnull Response<BCResult<EventList>> response) {
+                    BCResult<EventList> body = response.body();
+                    if (body.isOk()) {
+                        // EventList.RewardEvent event = body.result.events.get(0).getValue();
+                        // EventList.SlashEvent event = body.result.events.get(1).getValue();
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<EventList>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -3450,62 +3242,37 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.send_transaction;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainAccountRepository repository = MinterBlockChainApi.getInstance().account();
 
-            import java.math.BigInteger;
+            // build transaction with builder,
+            // see https://github.com/MinterTeam/minter-android-blockchain#2-creating-and-signing-transactions for more details
+            Transaction tx = new Transaction.Builder(new BigInteger("1"))
+                    .sendCoin()
+                    .build();
 
-            import javax.annotation.Nonnull;
+            PrivateKey pk = new PrivateKey("...");
+            TransactionSign sign = tx.signSingle(pk);
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.TransactionSendResult;
-            import network.minter.blockchain.models.operational.OperationInvalidDataException;
-            import network.minter.blockchain.models.operational.Transaction;
-            import network.minter.blockchain.models.operational.TransactionSign;
-            import network.minter.blockchain.repo.BlockChainAccountRepository;
-            import network.minter.core.crypto.PrivateKey;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
+            Call<BCResult<TransactionSendResult>> request = repository.sendTransaction(sign);
 
-            public class get {
-
-                public static void main(String[] args) throws OperationInvalidDataException {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainAccountRepository repository = MinterBlockChainApi.getInstance().account();
-
-                    // build transaction with builder,
-                    // see https://github.com/MinterTeam/minter-android-blockchain#2-creating-and-signing-transactions for more details
-                    Transaction tx = new Transaction.Builder(new BigInteger("1"))
-                            .sendCoin()
-                            .build();
-
-                    PrivateKey pk = new PrivateKey("...");
-                    TransactionSign sign = tx.signSingle(pk);
-
-                    Call<BCResult<TransactionSendResult>> request = repository.sendTransaction(sign);
-
-                    request.enqueue(new Callback<BCResult<TransactionSendResult>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<TransactionSendResult>> call, @Nonnull Response<BCResult<TransactionSendResult>> response) {
-                            BCResult<TransactionSendResult> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<TransactionSendResult>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<TransactionSendResult>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<TransactionSendResult>> call, @Nonnull Response<BCResult<TransactionSendResult>> response) {
+                    BCResult<TransactionSendResult> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<TransactionSendResult>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: JavaScript
           source: |
             import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
@@ -3584,48 +3351,28 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.status;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainStatusRepository repository = MinterBlockChainApi.getInstance().status();
 
-            import javax.annotation.Nonnull;
+            Call<BCResult<NetworkStatus>> request = repository.getNetworkStatus();
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.NetworkStatus;
-            import network.minter.blockchain.repo.BlockChainStatusRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainStatusRepository repository = MinterBlockChainApi.getInstance().status();
-
-                    Call<BCResult<NetworkStatus>> request = repository.getNetworkStatus();
-
-
-                    request.enqueue(new Callback<BCResult<NetworkStatus>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<NetworkStatus>> call, @Nonnull Response<BCResult<NetworkStatus>> response) {
-                            BCResult<NetworkStatus> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<NetworkStatus>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<NetworkStatus>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<NetworkStatus>> call, @Nonnull Response<BCResult<NetworkStatus>> response) {
+                    BCResult<NetworkStatus> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<NetworkStatus>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -3667,49 +3414,29 @@ paths:
           $ref: '#/components/responses/Error'
       x-code-samples:
         - lang: Java
-          source: |
-            package network.minter.blockchain.samples.transaction;
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
 
-            import javax.annotation.Nonnull;
+            Call<BCResult<HistoryTransaction>> request = repository.getTransaction("");
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.HistoryTransaction;
-            import network.minter.blockchain.repo.BlockChainTransactionRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
-
-
-                    Call<BCResult<HistoryTransaction>> request = repository.getTransaction("");
-
-                    request.enqueue(new Callback<BCResult<HistoryTransaction>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<HistoryTransaction>> call, @Nonnull Response<BCResult<HistoryTransaction>> response) {
-                            BCResult<HistoryTransaction> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<HistoryTransaction>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<HistoryTransaction>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<HistoryTransaction>> call, @Nonnull Response<BCResult<HistoryTransaction>> response) {
+                    BCResult<HistoryTransaction> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<HistoryTransaction>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |-
             <?php
@@ -3753,54 +3480,32 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.transactions;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
 
-            import java.util.List;
+            Call<BCResult<List<HistoryTransaction>>> request = repository.getTransactions(
+                    new BlockChainTransactionRepository.TQuery()
+                            .setFrom("Mx...")
+                            .setTo("Mx...")
+            );
 
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.HistoryTransaction;
-            import network.minter.blockchain.repo.BlockChainTransactionRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
-
-
-                    Call<BCResult<List<HistoryTransaction>>> request = repository.getTransactions(
-                            new BlockChainTransactionRepository.TQuery()
-                                    .setFrom("Mx...")
-                                    .setTo("Mx...")
-                    );
-
-                    request.enqueue(new Callback<BCResult<List<HistoryTransaction>>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Response<BCResult<List<HistoryTransaction>>> response) {
-                            BCResult<List<HistoryTransaction>> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<List<HistoryTransaction>>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Response<BCResult<List<HistoryTransaction>>> response) {
+                    BCResult<List<HistoryTransaction>> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -3843,52 +3548,32 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.unconfirmed_txs;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
 
-            import javax.annotation.Nonnull;
+            Call<BCResult<UnconfirmedTransactions>> request = repository.getUnconfirmedList();
 
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.UnconfirmedTransactions;
-            import network.minter.blockchain.repo.BlockChainTransactionRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
-
-
-                    Call<BCResult<UnconfirmedTransactions>> request = repository.getUnconfirmedList();
-
-                    request.enqueue(new Callback<BCResult<UnconfirmedTransactions>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Response<BCResult<UnconfirmedTransactions>> response) {
-                            BCResult<UnconfirmedTransactions> body = response.body();
-                            if (body.isOk()) {
-                                /*
-                                for(TransactionSign sign: body.result) {
-                                    // do smthng with sign
-                                }
-                                */
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
+            request.enqueue(new Callback<BCResult<UnconfirmedTransactions>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Response<BCResult<UnconfirmedTransactions>> response) {
+                    BCResult<UnconfirmedTransactions> body = response.body();
+                    if (body.isOk()) {
+                        /*
+                        for(TransactionSign sign: body.result) {
+                            // do smthng with sign
                         }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+                        */
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
@@ -3932,49 +3617,28 @@ paths:
       x-code-samples:
         - lang: Java
           source: |
-            package network.minter.blockchain.samples.validators;
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
 
-            import android.util.Log;
+            BlockChainStatusRepository repository = MinterBlockChainApi.getInstance().status();
 
-            import java.util.List;
+            Call<BCResult<List<NetworkStatus.Validator>>> request = repository.getValidators();
 
-            import javax.annotation.Nonnull;
-
-            import network.minter.blockchain.MinterBlockChainApi;
-            import network.minter.blockchain.models.BCResult;
-            import network.minter.blockchain.models.NetworkStatus;
-            import network.minter.blockchain.repo.BlockChainStatusRepository;
-            import retrofit2.Call;
-            import retrofit2.Callback;
-            import retrofit2.Response;
-
-            public class get {
-
-                public static void main(String[] args) {
-                    MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
-
-                    BlockChainStatusRepository repository = MinterBlockChainApi.getInstance().status();
-
-                    Call<BCResult<List<NetworkStatus.Validator>>> request = repository.getValidators();
-
-                    request.enqueue(new Callback<BCResult<List<NetworkStatus.Validator>>>() {
-                        @Override
-                        public void onResponse(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Response<BCResult<List<NetworkStatus.Validator>>> response) {
-                            BCResult<List<NetworkStatus.Validator>> body = response.body();
-                            if (body.isOk()) {
-                                // do something with body.result
-                            } else {
-                                Log.d("MinterError", body.error.getMessage());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Throwable t) {
-                            // handle error
-                        }
-                    });
+            request.enqueue(new Callback<BCResult<List<NetworkStatus.Validator>>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Response<BCResult<List<NetworkStatus.Validator>>> response) {
+                    BCResult<List<NetworkStatus.Validator>> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
                 }
-            }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
         - lang: PHP
           source: |
             <?php
