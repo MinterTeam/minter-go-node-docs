@@ -2553,6 +2553,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "\nimport MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/api/\")\n\nlet accountManager = AccountManager.default\n\naccountManager.address(\"Mx618ed05277e7568ee943cd1b8e22ced4cf873f95\") { [weak self] (resp, error) in\n\tprint(resp)\n\tprint(error)\n}\n"
   /block:
     get:
       summary: Block
@@ -2641,6 +2643,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = BlockManager.default\n\nmanager.blocks(height: \"1\") { blocks, error in\n\tprint(blocks)\n\tprint(error)\n}\n"
   /candidate:
     get:
       summary: Candidate
@@ -2761,6 +2765,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = CandidateManager.default\n\nmanager.candidate(publicKey: \"Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0\", completion: { (response, error) in\n\tprint(response)\n\tprint(error)\n})\n"
   /candidates:
     get:
       summary: Candidates
@@ -2847,6 +2853,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = CandidateManager.default\n\nmanager.candidates(height: \"1\", completion: { (response, error) in\n\tprint(response)\n\tprint(error)\n})\n"
   /coin_info:
     get:
       summary: Coin Info
@@ -2934,6 +2942,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = CoinManager.default\n\nself.manager?.info(symbol: \"TESTCOIN\", completion: { (coin, error) in\n\tprint(coin)\n\tprint(error)\n})\n"
   /estimate_coin_buy:
     get:
       summary: Estimate Buy Coin
@@ -3061,6 +3071,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.estimateCoinBuy(from: \"MNT\", to: \"TESTBOT\", amount: Decimal(string: \"10000000000\")!, completion: { (willPay, commission, error) in\n\tprint(willPay)\n\tprint(commission)\n\tprint(error)\n})\n"
   /estimate_coin_sell:
     get:
       summary: Estimate Sell Coin
@@ -3188,6 +3200,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.estimateCoinSell(from: \"MNT\", to: \"VALIDATOR\", amount: Decimal(string: \"10000000000\")!, completion: { (willPay, commission, error) in\n\tprint(error)\n\tprint(willPay)\n\tprint(commission)\n})\n"
   /estimate_tx_commission:
     get:
       summary: Estimate Tx Commission
@@ -3291,6 +3305,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nlet tx = \"f88313018a424c41434b434f494e0001aae98a424c41434b434f494e0094228e5a68b847d169da439ec15f727f08233a7ca6883ed6df8a5bc9f6f1808001b845f8431ca02814f29ccc1c1438532d286ce285f3897939281c36da7785ab99f76e2e5f8f91a074acc3624f466302addf4b734eeac4f977179cf1d93f7351cf74c2acda5732f1\"\n\nmanager.estimateCommission(for: tx, completion: { (comission, error) in\n\tprint(comission)\n\tprint(error)\n})\n"
   /events:
     get:
       summary: Events
@@ -3377,6 +3393,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = EventManager.default\n\nmanager.events(height: \"1\") { events, error in\n\tprint(events)\n\tprint(error)\n}\n"
   /max_gas:
     get:
       summary: Max Gas
@@ -3545,6 +3563,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nlet tx = DeclareCandidacyRawTransaction(nonce: BigUInt(1), gasCoin: \"MNT\", address: \"MxAddress\", publicKey: \"MpPublicKey\", commission: BigUInt(decimal: 10.0)!, coin: \"MNT\", stake: BigUInt(decimal: 100.0)!)\n\nlet signed = RawTransactionSigner.sign(rawTx: tx, privateKey: \"Private Key String Here\")\n\nmanager.send(tx: signed!) { (res, res1, error) in\n\t\n}\n"
   /status:
     get:
       summary: Status
@@ -3620,6 +3640,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = StatusManager.default\n\nmanager.status(with: { (response, error) in\n\tprint(response)\n\tprint(error)\n})\n"
   /transaction:
     get:
       summary: Transaction
@@ -3703,6 +3725,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.transaction(hash: \"Mtb181f0185dfbda5f6ed497581dce1bf4cbac2a427374bf45018343c7af6471b8\", completion: { (transaction, error) in\n\tprint(transaction)\n\tprint(error)\n})\n"
   /transactions:
     get:
       summary: Transactions Search
@@ -3792,6 +3816,8 @@ paths:
             } catch(RequestException $exception) {
                 
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.transactions(query: \"query here\", completion: { (transactions, error) in\n\tprint(transactions)\n\tprint(error)\n})\n"
   /unconfirmed_txs:
     get:
       summary: Unconfirmed Transactions
@@ -3878,6 +3904,8 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.unconfirmedTransactions(height: \"0\", completion: { (transactions, error) in\n\tprint(transactions)\n\tprint(error)\n})\n"
   /validators:
     get:
       summary: Validators
@@ -3961,3 +3989,5 @@ paths:
             } catch(RequestException $exception) {
                 // handle error
             }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = ValidatorManager.default\n\nmanager.validators(with: { (validators, error) in\n\tprint(validators)\n\tprint(error)\n})\n"
