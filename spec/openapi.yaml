@@ -294,7 +294,7 @@ info:
 
     -   **Gas Price** - big int, fee multiplier, should be equal or greater than current mempool min gas price.
 
-    -   **Gas Coin** - 10 bytes, symbol of a coin to pay fee
+    -   **Gas Coin** - 10 bytes, symbol of a coin to pay fee, right padded with zeros
 
     -   **Type** - type of transaction (see below).
 
@@ -679,6 +679,9 @@ info:
     **RawCheck** - Raw check received from sender.
 
     **Proof** - Proof of owning a check.
+    
+    
+    Note that maximum GasPrice is limited to 1 to prevent fraud, because GasPrice is set by redeem tx sender but commission is charded from check issuer.
 
 
     ## Set candidate online transaction
