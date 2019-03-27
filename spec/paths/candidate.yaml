@@ -5,7 +5,7 @@ get:
   tags:
     - Node API
   parameters:
-    - name: pubkey
+    - name: pub_key
       in: query
       description: Public key of a candidate
       required: true
