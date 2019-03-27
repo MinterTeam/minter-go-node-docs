@@ -135,8 +135,8 @@ info:
 
     - **Coin name** - Name of a coin. Arbitrary string up to 64 letters length.
     - **Coin symbol** - Symbol of a coin. Must be unique, alphabetic, uppercase, 3 to 10 letters length.
-    - **Initial supply** - Amount of coins to issue. Issued coins will be available to sender account.
-    - **Initial reserve** - Initial reserve in base coin.
+    - **Initial supply** - Amount of coins to issue. Issued coins will be available to sender account. Should be between 1 and 1,000,000,000,000,000 coins.
+    - **Initial reserve** - Initial reserve in base coin. Should be at least 10 bips.
     - **Constant Reserve Ratio (CRR)** - uint, should be from 10 to 100.
 
     After coin issued you can send is as ordinary coin using standard wallets.
@@ -1026,6 +1026,7 @@ components:
                 anyOf:
                   - $ref: '#/components/schemas/RewardEvent'
                   - $ref: '#/components/schemas/SlashEvent'
+                  - $ref: '#/components/schemas/CoinLiquidationEvent'
     RewardEvent:
       type: object
       properties:
@@ -1068,6 +1069,18 @@ components:
             validator_pub_key:
               type: string
               example: Mpb54df5b1abc46ecdb08935d6fc2f4526eba27caf1b6f2f87b3477ef3119bc0fd
+    CoinLiquidationEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          example: minter/CoinLiquidationEvent
+        value:
+          type: object
+          properties:
+            coin:
+              type: string
+              example: ABC
     MaxGasResponse:
       type: object
       properties:
@@ -1162,7 +1175,7 @@ components:
               items:
                 type: object
                 properties:
-                  pubkey:
+                  pub_key:
                     type: string
                     example: Mp738da41ba6a7b7d69b7294afa158b89c5a1b410cbf0c2443c85c5fe24ad1dd1c
                   signed:
@@ -1388,7 +1401,7 @@ components:
             total_stake:
               type: string
               example: '209369045801925559657593'
-            pubkey:
+            pub_key:
               type: string
               example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
             commission:
@@ -1463,7 +1476,7 @@ components:
               total_stake:
                 type: string
                 example: '209369045801925559657593'
-              pubkey:
+              pub_key:
                 type: string
                 example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
               commission:
@@ -1492,7 +1505,7 @@ components:
           items:
             type: object
             properties:
-              pubkey:
+              pub_key:
                 type: string
                 example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
               voting_power:
@@ -1736,7 +1749,7 @@ components:
             coin:
               type: string
               example: MNT
-            stake:
+            value:
               type: string
               example: '1000000000000000000000000'
         payload:
@@ -2196,7 +2209,7 @@ components:
         data:
           type: object
           properties:
-            pubkey:
+            pub_key:
               type: string
               example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
         payload:
@@ -2244,7 +2257,7 @@ components:
         data:
           type: object
           properties:
-            pubkey:
+            pub_key:
               type: string
               example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
         payload:
@@ -2616,7 +2629,7 @@ paths:
       tags:
         - Node API
       parameters:
-        - name: pubkey
+        - name: pub_key
           in: query
           description: Public key of a candidate
           required: true
