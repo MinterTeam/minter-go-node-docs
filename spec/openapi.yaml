@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 0.10.0
+  version: 0.15.0
   title: Minter Node API
   contact:
     email: dl@minter.org
