@@ -642,8 +642,8 @@ info:
       |**TypeBuyCoin**                  | 100 units |
       |**TypeCreateCoin**               | 1000 units |
       |**TypeDeclareCandidacy**         | 10000 units |
-      |**TypeDelegate**                 | 100 units |
-      |**TypeUnbond**                   | 100 units |
+      |**TypeDelegate**                 | 200 units |
+      |**TypeUnbond**                   | 200 units |
       |**TypeRedeemCheck**              | 30 units |
       |**TypeSetCandidateOnline**       | 100 units |
       |**TypeSetCandidateOffline**      | 100 units |
