@@ -1027,11 +1027,7 @@ info:
 
     6 letters -- 1000 bips + standard transaction fee\
 
-    7 letters -- 100 bips + standard transaction fee\
-
-    8 letters -- 10 bips + standard transaction fee\
-
-    9-10 letters - just standard transaction fee
+    7-10 letters -- 100 bips + standard transaction fee
 
 
     # Validators
