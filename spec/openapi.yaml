@@ -46,6 +46,8 @@ info:
        ```
 
       Then open http://localhost:3000/ in local browser to see node's GUI.
+      
+      You can install libleveldb.so.1 from this gist: https://gist.github.com/danil-lashin/9df600cb2d1fe8e503aae60fc0d6e209 
 
     ## From Source
 
