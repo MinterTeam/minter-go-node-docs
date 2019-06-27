@@ -35,6 +35,8 @@ info:
        ```
 
       Then open http://localhost:3000/ in local browser to see node's GUI.
+      
+      You can install libleveldb.so.1 from this gist: https://gist.github.com/danil-lashin/9df600cb2d1fe8e503aae60fc0d6e209 
 
     ## From Source
 
@@ -661,13 +663,11 @@ info:
     To issue a coin with short name Coiner should pay extra fee. Fee is
     depends on length of Coin Symbol.
 
-    3 letters -- 1 000 000 bips + standard transaction fee\
-    4 letters -- 100 000 bips + standard transaction fee\
-    5 letters -- 10 000 bips + standard transaction fee\
-    6 letters -- 1000 bips + standard transaction fee\
-    7 letters -- 100 bips + standard transaction fee\
-    8 letters -- 10 bips + standard transaction fee\
-    9-10 letters - just standard transaction fee
+    3 letters — 1 000 000 bips + standard transaction fee\
+    4 letters — 100 000 bips + standard transaction fee\
+    5 letters — 10 000 bips + standard transaction fee\
+    6 letters — 1000 bips + standard transaction fee\
+    7-10 letters — 100 bips + standard transaction fee
 
     # Validators
 
@@ -974,6 +974,34 @@ info:
         pure PHP SDK for working with Minter blockchain
 
     ## Android SDK
+    -   [minter-android-core](https://github.com/MinterTeam/minter-android-core) -
+        foundation for all Minter blockchain operations
+    -   [minter-android-blockchain](https://github.com/MinterTeam/minter-android-blockchain) -
+        operate with Minter transactions using this sdk
+    -   [minter-android-explorer](https://github.com/MinterTeam/minter-android-explorer) -
+        communicate with the Minter blockchain through the Explorer
+
+
+    ## C++ SDK
+    - [cpp-minter](https://github.com/MinterTeam/cpp-minter) - build and sign any transaction, generate mnemonic with private and public key
+
+    # Other public services
+    ## Explorer API
+
+      [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api/1.2.0)
+
+      Testnet base url: https://explorer-api.testnet.minter.network/api/
+
+      Mainnet base url: https://explorer-api.apps.minter.network/api/
+
+    ## Gate API
+      Minter Gate is a service which provides to clients publish prepared transactions to the Minter Network
+
+      [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
+
+      Testnet base url: https://gate.apps.minter.network/api/
+
+      Mainnet base url: https://gate.minter.network/api/
 tags:
   - name: Node API
 servers:
