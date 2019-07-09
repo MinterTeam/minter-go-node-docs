@@ -1524,9 +1524,9 @@ info:
 
       [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
 
-      Testnet base url: https://gate.apps.minter.network/api/
+      Testnet base url: https://gate.minter.network/api/
 
-      Mainnet base url: https://gate.minter.network/api/
+      Mainnet base url: https://gate-api.minter.network/api/
 
 tags:
   - name: Node API
