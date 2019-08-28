@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Minter Node Reference</title>
+    <!-- needed for adaptive design -->
+    <meta name="theme-color" content="#0033a0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!--
+    ReDoc uses font options from the parent element
+    So override default browser styles
+    -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+       #redoc_container .menu-content img {
+        padding: 20px 30px 14px 30px;
+      }
+    </style>
+    
+    <style>
+      #redoc_container > div > div.api-content > div {
+        padding: 10px 0 !important;
+      }
+      #redoc_container > div > div.api-content > div:first-child {
+        padding: 40px 0 !important;
+      }
+      #redoc_container > div > div.api-content > div > div > div > h1 {
+        margin-bottom: 0 !important;
+      }
+
+      .diqfaT {
+        padding: 10px 40px !important;
+      }
+
+      #redoc_container > div > div.api-content h2 {
+        padding: 0;
+        margin: 0;
+      }
+
+      #redoc_container > div > div.api-content > div:nth-child(1) {
+        padding-bottom: 0 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="redoc_container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"></script>
+    <script>
+      Redoc.init(
+        './openapi.json',
+        {"hideDownloadButton":false,"expandResponses":true,"requiredPropsFirst":true,"onlyRequiredInSamples":true},
+        document.getElementById("redoc_container")
+      );
+    </script>
+  </body>
+</html>
