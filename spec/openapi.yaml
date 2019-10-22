@@ -47,7 +47,7 @@ info:
 
       Then open http://localhost:3000/ in local browser to see node's GUI.
       
-      You can install libleveldb.so.1 from this gist: https://gist.github.com/danil-lashin/9df600cb2d1fe8e503aae60fc0d6e209 
+      You can install libleveldb.so.1 from this gist: https://gist.github.com/danil-lashin/9df600cb2d1fe8e503aae60fc0d6e209
 
     ## From Source
 
@@ -256,7 +256,7 @@ info:
 
     return s * ((1 + d / r) ^ c - 1);
 
-    ```  
+    ```
 
 
 
@@ -681,7 +681,7 @@ info:
 
     **RawCheck** - Raw check received from sender.
 
-    **Proof** - Proof of owning a check.
+    **Proof** - Proof of owning a check: password signed with recipient's address. [Read more](https://docs.minter.network/#section/Minter-Check/Check-hijacking-protection)
 
 
     Note that maximum GasPrice is limited to 1 to prevent fraud, because
@@ -881,7 +881,7 @@ info:
 
     For issuing Minter Check you can use our
 
-    [tool](https://testnet.console.minter.network).
+    [Console](https://console.minter.network).
 
 
     You will need to fill a form:
