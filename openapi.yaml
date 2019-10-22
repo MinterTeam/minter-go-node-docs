@@ -203,6 +203,7 @@ info:
     ```go
     type Transaction struct {
         Nonce         uint64
+        ChainID       byte
         GasPrice      *big.Int
         GasCoin       [10]byte
         Type          byte
@@ -949,6 +950,10 @@ info:
 
     # Minter SDKs
 
+    ## GO SDK
+    -   [minter-go-sdk](https://github.com/MinterTeam/minter-go-sdk) – a
+        pure GO SDK for working with Minter blockchain
+        
     ## JavaScript SDK
     -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
         communicate with the Minter blockchain through its API
