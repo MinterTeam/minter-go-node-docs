@@ -614,7 +614,7 @@ info:
     type DelegateData struct {
         PubKey []byte
         Coin   [10]byte
-        Stake  *big.Int
+        Value  *big.Int
     }
 
     ```
@@ -624,7 +624,7 @@ info:
 
     **Coin** - Symbol of coin to stake.
 
-    **Stake** - Amount of coins to stake.
+    **Value** - Amount of coins to stake.
 
 
     ## Unbond transaction
