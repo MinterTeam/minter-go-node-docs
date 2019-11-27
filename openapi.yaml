@@ -189,6 +189,7 @@ info:
     Each transaction has:
 
     -   **Nonce** - int, used for prevent transaction reply.
+    -   **ChainID** - id of the network (1 - mainnet, 2 - testnet)
     -   **Gas Price** - big int, fee multiplier, should be equal or greater than current mempool min gas price.
     -   **Gas Coin** - 10 bytes, symbol of a coin to pay fee, right padded with zeros
     -   **Type** - type of transaction (see below).
@@ -3262,7 +3263,10 @@ paths:
   /send_transaction:
     get:
       summary: Send Transaction
-      description: Send Transaction
+      description: |
+        Send Transaction to the mempool.
+        Аfter getting into the mempool the transaction need some time (~5sec) to appear in the blockchain.
+        Note: in some rare cases transaction may appear in the block with failed status, so check it by hash, to ensure that it is succeeded.
       operationId: send_transaction
       tags:
         - Node API
