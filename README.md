@@ -3,6 +3,7 @@
 
 ## Links
 
+- [Minter Go Node Repository](https://github.com/MinterTeam/minter-go-node)
 - [Reference Documentation (ReDoc)](https://minterteam.github.io/minter-go-node-docs/)
 - OpenAPI Raw Files: [JSON](https://minterteam.github.io/minter-go-node-docs/openapi.json) [YAML](https://minterteam.github.io/minter-go-node-docs/openapi.yaml)
 
