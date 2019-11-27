@@ -291,6 +291,8 @@ info:
 
 
     -   **Nonce** - int, used for prevent transaction reply.
+    
+    -   **ChainID** - id of the network (1 - mainnet, 2 - testnet)
 
     -   **Gas Price** - big int, fee multiplier, should be equal or greater than
     current mempool min gas price.
