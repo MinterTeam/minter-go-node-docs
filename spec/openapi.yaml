@@ -1475,8 +1475,6 @@ info:
 
     -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
         communicate with the Minter blockchain through its API
-    -   [minter-js-org](https://github.com/MinterTeam/minter-js-org) –
-        communicate with the my.minter user database
     -   [minterjs-wallet](https://github.com/MinterTeam/minterjs-wallet) –
         BIP0032 HD Wallet implementation
     -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – create,
@@ -1521,14 +1519,14 @@ info:
 
       Testnet base url: https://explorer-api.testnet.minter.network/api/
 
-      Mainnet base url: https://explorer-api.apps.minter.network/api/
+      Mainnet base url: https://explorer-api.minter.network/api/
 
     ## Gate API
       Minter Gate is a service which provides to clients publish prepared transactions to the Minter Network
 
       [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
 
-      Testnet base url: https://gate.minter.network/api/
+      Testnet base url: https://gate-api.testnet.minter.network/api/
 
       Mainnet base url: https://gate-api.minter.network/api/
 
