@@ -674,14 +674,14 @@ info:
     ```go
 
     type RedeemCheckData struct {
-        RawCheck []byte
+        Check []byte
         Proof    [65]byte
     }
 
     ```
 
 
-    **RawCheck** - Raw check received from sender.
+    **Check** - Check received from sender.
 
     **Proof** - Proof of owning a check: password signed with recipient's address. [Read more](https://docs.minter.network/#section/Minter-Check/Check-hijacking-protection)
 
