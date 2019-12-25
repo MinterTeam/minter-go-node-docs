@@ -992,18 +992,18 @@ info:
     # Other public services
     ## Explorer API
 
-      [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api/1.2.0)
+      [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api)
 
       Testnet base url: https://explorer-api.testnet.minter.network/api/
 
-      Mainnet base url: https://explorer-api.apps.minter.network/api/
+      Mainnet base url: https://explorer-api.minter.network/api/
 
     ## Gate API
       Minter Gate is a service which provides to clients publish prepared transactions to the Minter Network
 
       [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
 
-      Testnet base url: https://gate.minter.network/api/
+      Testnet base url: https://gate-api.testnet.minter.network/api/
 
       Mainnet base url: https://gate-api.minter.network/api/
 tags:
