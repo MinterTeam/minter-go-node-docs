@@ -2,6 +2,8 @@ get:
   summary: Events
   description: Get events for given height
   operationId: events
+  tags:
+    - Node API
   parameters:
     - name: height
       in: query

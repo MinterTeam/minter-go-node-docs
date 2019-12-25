@@ -2,6 +2,8 @@ get:
   summary: Max Gas
   description: Maximum available gas in block
   operationId: maxgas
+  tags:
+    - Node API
   parameters:
     - name: height
       in: query

@@ -2,6 +2,8 @@ get:
   summary: Address
   description: Get balance and transaction count of given address
   operationId: address
+  tags:
+    - Node API
   parameters:
     - name: address
       in: query

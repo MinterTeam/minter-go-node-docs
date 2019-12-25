@@ -2,8 +2,10 @@ get:
   summary: Candidate
   description: Get information about candidate
   operationId: candidate
+  tags:
+    - Node API
   parameters:
-    - name: pubkey
+    - name: pub_key
       in: query
       description: Public key of a candidate
       required: true
@@ -22,5 +24,11 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/CandidateResponse'
+    '404':
+      description: Candidate not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CandidateNotFoundResponse'
     '500':
       $ref: '#/components/responses/Error'

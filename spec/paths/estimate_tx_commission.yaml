@@ -2,6 +2,8 @@ get:
   summary: Estimate Tx Commission
   description: Estimate tx commission
   operationId: estimate_tx_commission
+  tags:
+    - Node API
   parameters:
     - name: tx
       in: query

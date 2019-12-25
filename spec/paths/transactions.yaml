@@ -2,6 +2,8 @@ get:
   summary: Transactions Search
   description: Search Transactions
   operationId: transactions
+  tags:
+    - Node API
   parameters:
     - name: query
       in: query

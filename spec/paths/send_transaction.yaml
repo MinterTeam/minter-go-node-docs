@@ -1,7 +1,15 @@
 get:
   summary: Send Transaction
-  description: Send Transaction
+  description: >
+    Send Transaction to the mempool.
+
+    Аfter getting into the mempool the transaction need some time (~5sec) to appear in the blockchain.
+    
+    Note: in some rare cases transaction may appear in the block with failed status, so check it by hash, to ensure that it is succeeded.
+    
   operationId: send_transaction
+  tags:
+    - Node API
   parameters:
     - name: tx
       in: query
@@ -16,5 +24,11 @@ get:
         application/json:
           schema:
             $ref: '#/components/schemas/SendTransactionResponse'
+    '412':
+      description: Tx check error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SendTransactionErrorResponse'
     '500':
       $ref: '#/components/responses/Error'

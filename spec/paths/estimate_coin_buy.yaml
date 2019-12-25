@@ -2,6 +2,8 @@ get:
   summary: Estimate Buy Coin
   description: Estimate Buy Coin operation
   operationId: estimate_coin_buy
+  tags:
+    - Node API
   parameters:
     - name: coin_to_sell
       in: query
