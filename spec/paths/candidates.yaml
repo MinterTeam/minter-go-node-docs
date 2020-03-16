@@ -11,6 +11,12 @@ get:
       required: false
       schema:
         type: string
+    - name: include_stakes
+      in: query
+      description: Include candidate stakes
+      required: false
+      schema:
+        type: boolean
   responses:
     '200':
       description: Successful response

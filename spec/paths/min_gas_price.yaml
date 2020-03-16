@@ -1,0 +1,15 @@
+get:
+  summary: Min gas price
+  description: Minimal gas price for block
+  operationId: mingas
+  tags:
+    - Node API
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/MinGasResponse'
+    '500':
+      $ref: '#/components/responses/Error'
