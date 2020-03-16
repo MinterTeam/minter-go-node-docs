@@ -11,6 +11,18 @@ get:
       required: true
       schema:
         type: string
+    - name: page
+      in: query
+      description: Page
+      required: false
+      schema:
+        type: integer
+    - name: perPage
+      in: query
+      description: Transactions per page
+      required: false
+      schema:
+        type: integer
   responses:
     '200':
       description: Successful response

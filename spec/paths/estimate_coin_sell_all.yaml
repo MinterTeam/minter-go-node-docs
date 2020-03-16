@@ -1,0 +1,40 @@
+get:
+  summary: Estimate Sell all Coin
+  description: Estimate Sell all Coin operation
+  operationId: estimate_coin_sell_all
+  tags:
+    - Node API
+  parameters:
+    - name: coin_to_sell
+      in: query
+      description: Coin symbol to sell
+      required: true
+      schema:
+        type: string
+    - name: coin_to_buy
+      in: query
+      description: Coin symbol to buy
+      required: true
+      schema:
+        type: string
+    - name: value_to_sell
+      in: query
+      description: Value to sell
+      required: true
+      schema:
+        type: string
+    - name: height
+      in: query
+      description: Specify height
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EstimateCoinSellAllResponse'
+    '500':
+      $ref: '#/components/responses/Error'

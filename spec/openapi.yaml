@@ -214,6 +214,7 @@ info:
     Maximum is 1,000,000,000,000,000
 
 
+
     After coin issued you can send is as ordinary coin using standard wallets.
 
 
@@ -292,6 +293,8 @@ info:
 
 
     -   **Nonce** - int, used for prevent transaction reply.
+    
+    -   **ChainID** - id of the network (1 - mainnet, 2 - testnet)
 
     -   **Gas Price** - big int, fee multiplier, should be equal or greater than
     current mempool min gas price.
@@ -619,7 +622,7 @@ info:
     type DelegateData struct {
         PubKey []byte
         Coin   [10]byte
-        Stake  *big.Int
+        Value  *big.Int
     }
 
     ```
@@ -629,7 +632,7 @@ info:
 
     **Coin** - Symbol of coin to stake.
 
-    **Stake** - Amount of coins to stake.
+    **Value** - Amount of coins to stake.
 
 
     ## Unbond transaction
@@ -677,14 +680,14 @@ info:
     ```go
 
     type RedeemCheckData struct {
-        RawCheck []byte
-        Proof    [65]byte
+        Check []byte
+        Proof [65]byte
     }
 
     ```
 
 
-    **RawCheck** - Raw check received from sender.
+    **Check** - Check received from sender.
 
     **Proof** - Proof of owning a check: password signed with recipient's
     address. [Read
@@ -859,7 +862,7 @@ info:
 
     -   **Value** - amount of coins.
 
-    -   **Gas Coin Symbol** - symbol of coin to pay fee.
+    -   **GasCoin** - symbol of a coin to pay fee.
 
     -   **Due Block** - defines last block height in which the check can
         be used.
@@ -895,12 +898,16 @@ info:
 
     You will need to fill a form:
 
+    -   **Nonce** - unique \"id\" of the check.
 
-    :   -   **Nonce** - unique \"id\" of the check.
-        -   **Coin Symbol** - symbol of coin.
-        -   **Value** - amount of coins.
-        -   **Pass phrase** - secret phrase which you will pass to receiver
-            of the check.
+    -   **Coin Symbol** - symbol of coin.
+
+    -   **Gas coin** - symbol of a coin to pay fee.
+
+    -   **Value** - amount of coins.
+
+    -   **Pass phrase** - secret phrase which you will pass to receiver
+        of the check.
             
     ## How to cash a Minter Check
 
@@ -1525,18 +1532,18 @@ info:
 
     ## Explorer API
 
-      [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api/1.2.0)
+      [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api)
 
       Testnet base url: https://explorer-api.testnet.minter.network/api/
 
-      Mainnet base url: https://explorer-api.apps.minter.network/api/
+      Mainnet base url: https://explorer-api.minter.network/api/
 
     ## Gate API
       Minter Gate is a service which provides to clients publish prepared transactions to the Minter Network
 
       [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
 
-      Testnet base url: https://gate.minter.network/api/
+      Testnet base url: https://gate-api.testnet.minter.network/api/
 
       Mainnet base url: https://gate-api.minter.network/api/
 tags:
@@ -1664,6 +1671,18 @@ components:
         result:
           type: string
           example: '100000'
+    MinGasResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: string
+          example: '1'
     AddressResponse:
       type: object
       properties:
@@ -2030,6 +2049,26 @@ components:
               type: string
               example: Candidate not found
               description: Short description of an error
+    ValidatorNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Validator not found
+              description: Short description of an error
     CandidatesResponse:
       type: object
       properties:
@@ -2117,6 +2156,9 @@ components:
             reserve_balance:
               type: string
               example: '209369045801925559657593'
+            max_supply:
+              type: string
+              example: '1000000000000000000000000000000000'
     CreateCoinTx:
       type: object
       properties:
@@ -2157,6 +2199,9 @@ components:
             constant_reserve_ratio:
               type: string
               example: '40'
+            max_supply:
+              type: string
+              example: '100000000000000000000'
         payload:
           type: string
           example: payload
@@ -2453,6 +2498,21 @@ components:
               type: string
               example: '209369045801925559657593'
             commission:
+              type: string
+              example: '209369045801925559657593'
+    EstimateCoinSellAllResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            will_get:
               type: string
               example: '209369045801925559657593'
     EstimateTxCommissionResponse:
@@ -3074,3 +3134,21 @@ components:
                 type: string
                 example: >-
                   +JKCC9cBik1OVAAAAAAAAAAHt/agjwU/OALTP15wkrsBypmud2BvT691nHJWDV7mm44ZGlaKTU5UAAAAAAAAAIlSO1qu0qGWxiyAgAG4RfhDG6A1ZJqmHzkcTzLjLiFgWxf1MmnaU9uu7VCTcU/r819wraBZjjl3J+SQ2lAV07OrGoJ2Itc9sFJurRTgj/n2p5c8UA==
+    MissedBlocksResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            missed_blocks:
+              type: string
+              example: '________________________'
+            missed_blocks_count:
+              type: string
+              example: '0'
