@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: 0.15.0
+  version: 1.1.0
   title: Minter Node API
   contact:
     email: dl@minter.org
@@ -31,12 +31,8 @@ info:
     2. **Run Minter**
 
        ```bash
-       ./minter
+       ./minter node
        ```
-
-      Then open http://localhost:3000/ in local browser to see node's GUI.
-      
-      You can install libleveldb.so.1 from this gist: https://gist.github.com/danil-lashin/9df600cb2d1fe8e503aae60fc0d6e209
 
     ## From Source
 
@@ -78,10 +74,12 @@ info:
     4. **Run Minter**
 
       ```bash
-      minter
+      ./build/minter node
       ```
-
-      Then open `http://localhost:3000/` in local browser to see node's GUI.
+      or 
+      ```bash
+      minter node
+      ```
 
     # Blockchain Specification
 
@@ -140,7 +138,8 @@ info:
     - **Initial supply** - Amount of coins to issue. Issued coins will be available to sender account. Should be between 1 and 1,000,000,000,000,000 coins.
     - **Initial reserve** - Initial reserve in base coin. Should be at least 10 bips.
     - **Constant Reserve Ratio (CRR)** - uint, should be from 10 to 100.
-    - **Max supply** - maximum amount of coin emission.
+    - **Max supply** - Max amount of coins that are allowed to be issued. Maximum is 1,000,000,000,000,000
+
 
     After coin issued you can send is as ordinary coin using standard wallets.
 
@@ -362,6 +361,7 @@ info:
     **InitialAmount** - Amount of coins to issue. Issued coins will be available to sender account.
     **InitialReserve** - Initial reserve in BIP's.
     **ConstantReserveRatio** - CRR, uint, should be from 10 to 100.
+    **MaxSupply** - Max amount of coins that are allowed to be issued. Maximum is 1,000,000,000,000,000.
 
     ## Declare candidacy transaction
 
@@ -499,7 +499,7 @@ info:
 
     Type: **0x0D**
 
-    Transaction for sending coins to multiple addresses.
+    Transaction for sending coins to multiple addresses. *MultisendData can contain only 100 items. Therefore, this type of transaction has a limit of 100 recipent addresses.*
 
     *Data field contents:*
 
@@ -659,18 +659,16 @@ info:
     Also sender should pay extra 2 units per byte in Payload and Service
     Data fields.
 
-    Multisend transaction requires 1 unit per recipient excluding first one.
-
     ## Special fees
 
     To issue a coin with short name Coiner should pay extra fee. Fee is
     depends on length of Coin Symbol.
 
-    3 letters — 1 000 000 bips + standard transaction fee\
-    4 letters — 100 000 bips + standard transaction fee\
-    5 letters — 10 000 bips + standard transaction fee\
-    6 letters — 1000 bips + standard transaction fee\
-    7-10 letters — 100 bips + standard transaction fee
+    3 letters — 1 000 000 bips\
+    4 letters — 100 000 bips\
+    5 letters — 10 000 bips\
+    6 letters — 1000 bips\
+    7-10 letters — 100 bips
 
     # Validators
 
@@ -713,8 +711,8 @@ info:
     ## Validators limitations
     Minter Network has limited number of available slots for validators.
 
-    At genesis there will be just `16` of them. `4` slots will be added each
-    `518,400` blocks. Maximum validators count is `256`.
+    At genesis there are `16` slots. `4` slots will be added each
+    `518,400` blocks. Maximum number of validators is `256`.
 
     ## Rewards
     Rewards for blocks and commissions are accumulated and proportionally
@@ -758,13 +756,10 @@ info:
     ## Becoming validator in testnet
 
     1. Install and run Minter Full Node.
-    2. Get your validator\'s public key from [Minter
-        GUI](http://localhost:3000/).
+    2. Get your validator\'s public key (`minter show_validator`).
     3. Go to [Minter Console](https://testnet.console.minter.network/masternode/) and send 2 transactions:
       
       Fill and send `Declare candidacy` and `Set candidate online` forms.
-
-      P.S. You can receive testnet coins in our telegram wallet \@BipWallet\_Bot.
 
       1. Declare candidacy
 
@@ -959,8 +954,6 @@ info:
     ## JavaScript SDK
     -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
         communicate with the Minter blockchain through its API
-    -   [minter-js-org](https://github.com/MinterTeam/minter-js-org) –
-        communicate with the my.minter user database
     -   [minterjs-wallet](https://github.com/MinterTeam/minterjs-wallet) –
         BIP0032 HD Wallet implementation
     -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – create,
