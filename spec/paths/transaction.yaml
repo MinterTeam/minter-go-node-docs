@@ -11,6 +11,12 @@ get:
       required: true
       schema:
         type: string
+    - name: height
+      in: query
+      description: Specify height
+      required: false
+      schema:
+        type: integer
   responses:
     '200':
       description: Successful response
