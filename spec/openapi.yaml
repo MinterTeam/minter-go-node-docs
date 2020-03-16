@@ -1484,8 +1484,6 @@ info:
 
     -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
         communicate with the Minter blockchain through its API
-    -   [minter-js-org](https://github.com/MinterTeam/minter-js-org) –
-        communicate with the my.minter user database
     -   [minterjs-wallet](https://github.com/MinterTeam/minterjs-wallet) –
         BIP0032 HD Wallet implementation
     -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – create,
