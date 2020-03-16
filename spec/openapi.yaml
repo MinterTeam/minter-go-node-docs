@@ -779,6 +779,7 @@ info:
 
 
     Transaction for sending coins to multiple addresses.
+    *MultisendData can contain only 100 items. Therefore, this type of transaction has a limit of 100 recipent addresses.*
 
 
     *Data field contents:*
