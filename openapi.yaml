@@ -140,6 +140,7 @@ info:
     - **Initial supply** - Amount of coins to issue. Issued coins will be available to sender account. Should be between 1 and 1,000,000,000,000,000 coins.
     - **Initial reserve** - Initial reserve in base coin. Should be at least 10 bips.
     - **Constant Reserve Ratio (CRR)** - uint, should be from 10 to 100.
+    - **Max supply** - maximum amount of coin emission.
 
     After coin issued you can send is as ordinary coin using standard wallets.
 
@@ -352,6 +353,7 @@ info:
         InitialAmount        *big.Int
         InitialReserve       *big.Int
         ConstantReserveRatio uint
+        MaxSupply            *big.Int
     }
     ```
 
@@ -436,7 +438,7 @@ info:
     ```go
     type RedeemCheckData struct {
         Check []byte
-        Proof    [65]byte
+        Proof [65]byte
     }
     ```
 
@@ -551,6 +553,7 @@ info:
     -   **Nonce** - unique "id" of the check.
     -   **Coin Symbol** - symbol of coin.
     -   **Value** - amount of coins.
+    -   **GasCoin** - symbol of a coin to pay fee.
     -   **Due Block** - defines last block height in which the check can
         be used.
     -   **Lock** - secret to prevent hijacking.
@@ -572,12 +575,12 @@ info:
     [Console](https://console.minter.network).
 
     You will need to fill a form:
-
-    :   -   **Nonce** - unique \"id\" of the check.
-        -   **Coin Symbol** - symbol of coin.
-        -   **Value** - amount of coins.
-        -   **Pass phrase** - secret phrase which you will pass to receiver
-            of the check.
+    -   **Nonce** - unique \"id\" of the check.
+    -   **Coin Symbol** - symbol of coin.
+    -   **Gas coin** - symbol of a coin to pay fee.
+    -   **Value** - amount of coins.
+    -   **Pass phrase** - secret phrase which you will pass to receiver
+        of the check.
             
     ## How to cash a Minter Check
 
@@ -1127,6 +1130,18 @@ components:
         result:
           type: string
           example: '100000'
+    MinGasResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: string
+          example: '1'
     AddressResponse:
       type: object
       properties:
@@ -1487,6 +1502,26 @@ components:
               type: string
               example: Candidate not found
               description: Short description of an error
+    ValidatorNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Validator not found
+              description: Short description of an error
     CandidatesResponse:
       type: object
       properties:
@@ -1572,6 +1607,9 @@ components:
             reserve_balance:
               type: string
               example: '209369045801925559657593'
+            max_supply:
+              type: string
+              example: '1000000000000000000000000000000000'
     CreateCoinTx:
       type: object
       properties:
@@ -1611,6 +1649,9 @@ components:
             constant_reserve_ratio:
               type: string
               example: '40'
+            max_supply:
+              type: string
+              example: '100000000000000000000'
         payload:
           type: string
           example: payload
@@ -1900,6 +1941,21 @@ components:
               type: string
               example: '209369045801925559657593'
             commission:
+              type: string
+              example: '209369045801925559657593'
+    EstimateCoinSellAllResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            will_get:
               type: string
               example: '209369045801925559657593'
     EstimateTxCommissionResponse:
@@ -2506,6 +2562,24 @@ components:
               items:
                 type: string
                 example: +JKCC9cBik1OVAAAAAAAAAAHt/agjwU/OALTP15wkrsBypmud2BvT691nHJWDV7mm44ZGlaKTU5UAAAAAAAAAIlSO1qu0qGWxiyAgAG4RfhDG6A1ZJqmHzkcTzLjLiFgWxf1MmnaU9uu7VCTcU/r819wraBZjjl3J+SQ2lAV07OrGoJ2Itc9sFJurRTgj/n2p5c8UA==
+    MissedBlocksResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            missed_blocks:
+              type: string
+              example: ________________________
+            missed_blocks_count:
+              type: string
+              example: '0'
 paths:
   /address:
     get:
@@ -2747,6 +2821,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: include_stakes
+          in: query
+          description: Include candidate stakes
+          required: false
+          schema:
+            type: boolean
       responses:
         '200':
           description: Successful response
@@ -2977,6 +3057,47 @@ paths:
             }
         - lang: Swift
           source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.estimateCoinBuy(from: \"MNT\", to: \"TESTBOT\", amount: Decimal(string: \"10000000000\")!, completion: { (willPay, commission, error) in\n\tprint(willPay)\n\tprint(commission)\n\tprint(error)\n})\n"
+  /estimate_coin_sell_all:
+    get:
+      summary: Estimate Sell all Coin
+      description: Estimate Sell all Coin operation
+      operationId: estimate_coin_sell_all
+      tags:
+        - Node API
+      parameters:
+        - name: coin_to_sell
+          in: query
+          description: Coin symbol to sell
+          required: true
+          schema:
+            type: string
+        - name: coin_to_buy
+          in: query
+          description: Coin symbol to buy
+          required: true
+          schema:
+            type: string
+        - name: value_to_sell
+          in: query
+          description: Value to sell
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateCoinSellAllResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /estimate_coin_sell:
     get:
       summary: Estimate Sell Coin
@@ -3260,6 +3381,56 @@ paths:
                 $ref: '#/components/schemas/MaxGasResponse'
         '500':
           $ref: '#/components/responses/Error'
+  /min_gas_price:
+    get:
+      summary: Min gas price
+      description: Minimal gas price for block
+      operationId: mingas
+      tags:
+        - Node API
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinGasResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /missed_blocks:
+    get:
+      summary: Missed blocks
+      description: Missed blocks
+      operationId: missed_blocks
+      tags:
+        - Node API
+      parameters:
+        - name: pub_key
+          in: query
+          description: Public key of a candidate
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissedBlocksResponse'
+        '404':
+          description: Validator not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatorNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/Error'
   /send_transaction:
     get:
       summary: Send Transaction
@@ -3457,6 +3628,12 @@ paths:
           required: true
           schema:
             type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: Successful response
@@ -3522,6 +3699,18 @@ paths:
           required: true
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page
+          required: false
+          schema:
+            type: integer
+        - name: perPage
+          in: query
+          description: Transactions per page
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: Successful response
@@ -3659,6 +3848,18 @@ paths:
           required: false
           schema:
             type: string
+        - name: page
+          in: query
+          description: Page
+          required: false
+          schema:
+            type: integer
+        - name: perPage
+          in: query
+          description: Validators per page
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: Successful response
