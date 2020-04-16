@@ -1484,11 +1484,11 @@ info:
     ## JavaScript SDK
 
     -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
-        communicate with the Minter blockchain through its API
+        work with transactions, checks, and deeplinks
     -   [minterjs-wallet](https://github.com/MinterTeam/minterjs-wallet) –
-        BIP0032 HD Wallet implementation
-    -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – create,
-        manipulate and sign Minter transactions
+        work with mnemonic, private/public key and address
+    -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – 
+        low level TX implementation (only for advanced users, use SDK instead)
     -   [minterjs-util](https://github.com/MinterTeam/minterjs-util) – a
         collection of utility functions for Minter
 
@@ -1533,22 +1533,36 @@ info:
 
       [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api)
 
-      Testnet base url: https://explorer-api.testnet.minter.network/api/
+      Testnet base url: https://testnet.explorer-api.minter.network/api/v1/
 
-      Mainnet base url: https://explorer-api.minter.network/api/
+      Mainnet base url: https://explorer-api.minter.network/api/v1/
 
     ## Gate API
-      Minter Gate is a service which provides to clients publish prepared transactions to the Minter Network
+      Minter Gate is a service to publish prepared transactions to the Minter Network. 
+      Prefer to use it instead of node, because it provides load balancing and automatical check of transaction success.
 
       [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
 
-      Testnet base url: https://gate-api.testnet.minter.network/api/
+      Testnet base url: https://testnet.gate-api.minter.network/api/v1/
 
-      Mainnet base url: https://gate-api.minter.network/api/
+      Mainnet base url: https://gate-api.minter.network/api/v1/
+      
+    ## bip.dev API
+      Trade BIP through bip.dev
+
+      [Documentation](https://minterteam.github.io/bipdev-docs/)
+
+      Url: https://api.bip.dev/api/
+      
+      [Card API swagger)[https://app.swaggerhub.com/apis-docs/GrKamil/bipdev-card-api]
+      
+      Card API url: https://card-api.bip.dev/api/v1/
+      
+
 tags:
   - name: Node API
 servers:
-  - url: 'https://minter-node-1.testnet.minter.network:8841/'
+  - url: 'https://testnet.node-api.minter.network/'
     description: Minter Team testnet server
 components:
   responses:
