@@ -1,0 +1,3905 @@
+openapi: 3.0.0
+info:
+  version: 1.1.0
+  title: Minter Node API
+  contact:
+    email: dl@minter.org
+  license:
+    name: MIT
+    url: 'https://github.com/MinterTeam/minter-go-node/blob/master/LICENSE'
+  x-logo:
+    url: 'https://github.com/MinterTeam/minter-go-node/raw/master/minter-logo.svg?sanitize=true'
+    altText: Minter logo
+  description: |
+    # Introduction
+
+    Minter is a blockchain network that lets people, projects, and companies issue and manage their own coins and trade them at a fair market price with absolute and instant liquidity.
+
+    Github: https://github.com/MinterTeam/minter-go-node \
+    Official site: https://minter.network/
+
+    # Install Minter
+
+    There are several ways you can install Minter Blockchain Testnet node on your machine.
+
+    ## Using binary
+
+    1. **Download Minter**
+
+       Get [latest binary build](https://github.com/MinterTeam/minter-go-node/releases) suitable for your architecture and unpack it to desired folder.
+
+    2. **Run Minter**
+
+       ```bash
+       ./minter node
+       ```
+
+    ## From Source
+
+    You'll need `golang` installed https://golang.org/doc/install and the required
+    [environment variables set](https://github.com/tendermint/tendermint/wiki/Setting-GOPATH)
+
+    1. **Clone Minter source code to your machine**
+
+      ```bash
+      mkdir -p $GOPATH/src/github.com/MinterTeam
+      cd $GOPATH/src/github.com/MinterTeam
+      git clone https://github.com/MinterTeam/minter-go-node.git
+      cd minter-go-node
+      ```
+
+    2. **Get Tools & Dependencies**
+
+      ```bash
+      make get_tools
+      make get_vendor_deps
+      ```
+
+    3. **Compile**
+
+      ```bash
+      make install
+      ```
+
+      to put the binary in `$GOPATH/bin` or use:
+
+      ```bash
+      make build
+      ```
+
+      to put the binary in `./build`.
+
+      The latest `minter version` is now installed.
+
+    4. **Run Minter**
+
+      ```bash
+      ./build/minter node
+      ```
+      or 
+      ```bash
+      minter node
+      ```
+
+    # Blockchain Specification
+
+    **Tendermint**
+
+    Minter Blockchain utilizes `Tendermint Consensus Engine`.
+
+    Tendermint is software for securely and consistently replicating an application on many machines.
+    By securely, we mean that Tendermint works even if up to 1/3 of machines fail in arbitrary ways.
+    By consistently, we mean that every non-faulty machine sees the same transaction log and computes the same state.
+    Secure and consistent replication is a fundamental problem in distributed systems; it plays a critical role in the
+    fault tolerance of a broad range of applications, from currencies, to elections, to infrastructure orchestration,
+    and beyond.
+
+    Tendermint is designed to be easy-to-use, simple-to-understand, highly performant, and useful for a wide variety of
+    distributed applications.
+
+    You can read more about Tendermint Consensus in [official documentation](https://tendermint.com/docs/)
+
+    **Consensus**
+
+    In Minter we implemented Delegated Proof of Stake (DPOS) Consensus Protocol.
+
+    DPOS is the fastest, most efficient, most decentralized, and most flexible consensus model available. DPOS leverages the power of stakeholder approval voting to resolve consensus issues in a fair and democratic way.
+
+    **Block speed**
+
+    Minter Blockchain is configured to produce `1 block per 5 sec`. Actual block speed may vary depends on validators count, their computational power, internet speed, etc.
+
+    **Block size**
+
+    We limit block size to `10 000 transactions`. Block size in terms of bytes is not limited.
+
+    # Coins
+
+    Minter Blockchain is multi-coin system.
+
+    Base coin in testnet is `MNT`.\
+    Base coin in mainnet is `BIP`.
+
+    Smallest part of *each* coin is called `pip`.\
+    1 pip = 1^-18 of any coin. In Blockchain and API we only operating with pips.
+
+    > **Note:** Each coin has its **own** pip. You should treat pip like atomic part of a coin, not as currency:\
+    > 1 MNT = 10^18 pip (MNT's pip)\
+    > 1 ABC = 10^18 pip (ABC's pip)\
+    > 1 MNT != 1 ABC
+
+    ## Coin Issuance
+
+    Every user of Minter can issue own coin. Each coin is backed by base coin in some proportion.
+    Issue own coin is as simple as filling a form with given fields:
+
+    - **Coin name** - Name of a coin. Arbitrary string up to 64 letters length.
+    - **Coin symbol** - Symbol of a coin. Must be unique, alphabetic, uppercase, 3 to 10 letters length.
+    - **Initial supply** - Amount of coins to issue. Issued coins will be available to sender account. Should be between 1 and 1,000,000,000,000,000 coins.
+    - **Initial reserve** - Initial reserve in base coin. Should be at least 10 bips.
+    - **Constant Reserve Ratio (CRR)** - uint, should be from 10 to 100.
+    - **Max supply** - Max amount of coins that are allowed to be issued. Maximum is 1,000,000,000,000,000
+
+
+    After coin issued you can send is as ordinary coin using standard wallets.
+
+    ## Issuance Fees
+
+    To issue a coin Coiner should pay fee. Fee is depends on length of Coin Symbol.
+
+    3 letters – 1 000 000 bips\
+    4 letters – 100 000 bips\
+    5 letters – 10 000 bips\
+    6 letters – 1000 bips\
+    7-10 letters – 100 bips
+
+    ## Coin Exchange
+
+    Each coin in system can be instantly exchanged to another coin. This is possible because each coin has "reserve" in base
+    coin.
+
+    Here are some formulas we are using for coin conversion:
+
+    **CalculatePurchaseReturn**\
+    Given a coin supply (s), reserve balance (r), CRR (c) and a deposit amount (d), calculates the return for a given conversion (in the base coin):
+
+    ```go
+    return s * ((1 + d / r) ^ c - 1);
+    ```
+
+
+    **CalculateSaleReturn**\
+    Given a coin supply (s), reserve balance (r), CRR (c) and a sell amount (a), calculates the return for a given conversion
+
+    ```go
+    return r * (1 - (1 - a / s) ^ (1 / c));
+    ```
+
+    # Transactions
+
+    Transactions in Minter are [RLP-encoded](https://github.com/ethereum/wiki/wiki/RLP) structures.
+
+    Example of a signed transaction:
+
+        f873230101aae98a4d4e540000000000000094a93163fdf10724dc4785ff5cbfb9
+        ac0b5949409f880de0b6b3a764000080801ba06838db4a2197cfd70ede8d8d184d
+        bf332932ca051a243eb7886791250e545dd3a04b63fb1d1b5ef5f2cbd2ea12530c
+        da520b3280dcb75bfd45a873629109f24b29
+
+    Each transaction has:
+
+    -   **Nonce** - int, used for prevent transaction reply.
+    -   **ChainID** - id of the network (1 - mainnet, 2 - testnet)
+    -   **Gas Price** - big int, fee multiplier, should be equal or greater than current mempool min gas price.
+    -   **Gas Coin** - 10 bytes, symbol of a coin to pay fee, right padded with zeros
+    -   **Type** - type of transaction (see below).
+    -   **Data** - data of transaction (depends on transaction type).
+    -   **Payload** (arbitrary bytes) - arbitrary user-defined bytes.
+    -   **Service Data** - reserved field.
+    -   **Signature Type** - single or multisig transaction.
+    -   **Signature Data** - digital signature of transaction.
+
+    ```go
+    type Transaction struct {
+        Nonce         uint64
+        ChainID       byte
+        GasPrice      *big.Int
+        GasCoin       [10]byte
+        Type          byte
+        Data          []byte
+        Payload       []byte
+        ServiceData   []byte
+        SignatureType byte
+        SignatureData Signature
+    }
+
+    type Signature struct {
+        V           *big.Int
+        R           *big.Int
+        S           *big.Int
+    }
+
+    type MultiSignature struct {
+        MultisigAddress [20]byte
+        Signatures      []Signature
+    }
+    ```
+
+    ## Signature Types
+
+    |Type Name                           |Byte|
+    |----------------------------------- |----|
+    |**TypeSingle**                      |0x01|
+    |**TypeMulti**                       |0x02|
+
+    ## Types
+
+    Type of transaction is determined by a single byte.
+
+    |Type Name                           |Byte|
+    |----------------------------------- |----|
+    |**TypeSend**                        |0x01|
+    |**TypeSellCoin**                    |0x02|
+    |**TypeSellAllCoin**                 |0x03|
+    |**TypeBuyCoin**                     |0x04|
+    |**TypeCreateCoin**                  |0x05|
+    |**TypeDeclareCandidacy**            |0x06|
+    |**TypeDelegate**                    |0x07|
+    |**TypeUnbond**                      |0x08|
+    |**TypeRedeemCheck**                 |0x09|
+    |**TypeSetCandidateOnline**          |0x0A|
+    |**TypeSetCandidateOffline**         |0x0B|
+    |**TypeCreateMultisig**              |0x0C|
+    |**TypeMultisend**                   |0x0D|
+    |**TypeEditCandidate**               |0x0E|
+
+    ## Send transaction
+
+    Type: **0x01**
+
+    Transaction for sending arbitrary coin.
+
+    *Data field contents:*
+
+    ```go
+    type SendData struct {
+        Coin  [10]byte
+        To    [20]byte
+        Value *big.Int
+    }
+    ```
+
+    **Coin** - Symbol of a coin.
+    **To** - Recipient address in Minter Network.
+    **Value** - Amount of **Coin** to send.
+
+    ## Sell coin transaction
+
+    Type: **0x02**
+
+    Transaction for selling one coin (owned by sender) in favour of another coin in a system.
+
+    *Data field contents:*
+
+    ```go
+    type SellCoinData struct {
+        CoinToSell          [10]byte
+        ValueToSell         *big.Int
+        CoinToBuy           [10]byte
+        MinimumValueToBuy   *big.Int
+    }
+    ```
+
+    **CoinToSell** - Symbol of a coin to give.
+    **ValueToSell** - Amount of **CoinToSell** to give.
+    **CoinToBuy** - Symbol of a coin to get.
+    **MinimumValueToBuy** - Minimum value of coins to get.
+
+    ## Sell all coin transaction
+
+    Type: **0x03**
+
+    Transaction for selling all existing coins of one type (owned by sender) in favour of another coin in a system.
+
+    *Data field contents:*
+
+    ```go
+    type SellAllCoinData struct {
+        CoinToSell          [10]byte
+        CoinToBuy           [10]byte
+        MinimumValueToBuy   *big.Int
+    }
+    ```
+
+    **CoinToSell** - Symbol of a coin to give.
+    **CoinToBuy** - Symbol of a coin to get.
+    **MinimumValueToBuy** - Minimum value of coins to get.
+
+    ## Buy coin transaction
+
+    Type: **0x04**
+
+    Transaction for buy a coin paying another coin (owned by sender).
+
+    *Data field contents:*
+
+    ```go
+    type BuyCoinData struct {
+        CoinToBuy           [10]byte
+        ValueToBuy          *big.Int
+        CoinToSell          [10]byte
+        MaximumValueToSell  *big.Int
+    }
+    ```
+
+    **CoinToBuy** - Symbol of a coin to get.
+    **ValueToBuy** - Amount of **CoinToBuy** to get.
+    **CoinToSell** - Symbol of a coin to give.
+    **MaximumValueToSell** - Maximum value of coins to sell.
+
+    ## Create coin transaction
+
+    Type: **0x05**
+
+    Transaction for creating new coin in a system.
+
+    *Data field contents:*
+
+    ```go
+    type CreateCoinData struct {
+        Name                 string
+        Symbol               [10]byte
+        InitialAmount        *big.Int
+        InitialReserve       *big.Int
+        ConstantReserveRatio uint
+        MaxSupply            *big.Int
+    }
+    ```
+
+    **Name** - Name of a coin. Arbitrary string up to 64 letters length.
+    **Symbol** - Symbol of a coin. Must be unique, alphabetic, uppercase, 3 to 10 symbols length.
+    **InitialAmount** - Amount of coins to issue. Issued coins will be available to sender account.
+    **InitialReserve** - Initial reserve in BIP's.
+    **ConstantReserveRatio** - CRR, uint, should be from 10 to 100.
+    **MaxSupply** - Max amount of coins that are allowed to be issued. Maximum is 1,000,000,000,000,000.
+
+    ## Declare candidacy transaction
+
+    Type: **0x06**
+
+    Transaction for declaring new validator candidacy.
+
+    *Data field contents:*
+
+    ```go
+    type DeclareCandidacyData struct {
+        Address    [20]byte
+        PubKey     []byte
+        Commission uint
+        Coin       [10]byte
+        Stake      *big.Int
+    }
+    ```
+
+    **Address** - Address of candidate in Minter Network. This address would be able to control candidate. Also all rewards will be sent to this address.
+    **PubKey** - Public key of a validator.
+    **Commission** - Commission (from 0 to 100) from rewards which delegators will pay to validator.
+    **Coin** - Symbol of coin to stake.
+    **Stake** - Amount of coins to stake.
+
+    ## Delegate transaction
+
+    Type: **0x07**
+
+    Transaction for delegating funds to validator.
+
+    *Data field contents:*
+
+    ```go
+    type DelegateData struct {
+        PubKey []byte
+        Coin   [10]byte
+        Value  *big.Int
+    }
+    ```
+
+    **PubKey** - Public key of a validator.
+    **Coin** - Symbol of coin to stake.
+    **Value** - Amount of coins to stake.
+
+    ## Unbond transaction
+
+    Type: **0x08**
+
+    Transaction for unbonding funds from validator's stake.
+
+    *Data field contents:*
+
+    ```go
+    type UnbondData struct {
+        PubKey []byte
+        Coin   [10]byte
+        Value  *big.Int
+    }
+    ```
+
+    **PubKey** - Public key of a validator.
+    **Coin** - Symbol of coin to unbond.
+    **Value** - Amount of coins to unbond.
+
+    ## Redeem check transaction
+
+    Type: **0x09**
+
+    Transaction for redeeming a check.
+
+    *Data field contents:*
+
+    ```go
+    type RedeemCheckData struct {
+        Check []byte
+        Proof [65]byte
+    }
+    ```
+
+    **Check** - Check received from sender.
+    **Proof** - Proof of owning a check: password signed with recipient's address. [Read more](https://docs.minter.network/#section/Minter-Check/Check-hijacking-protection)
+
+    Note that maximum GasPrice is limited to 1 to prevent fraud, because GasPrice is set by redeem tx sender but commission is charded from check issuer.
+
+    ## Set candidate online transaction
+
+    Type: **0x0A**
+
+    Transaction for turning candidate on. This transaction should be sent from address which is set in the "Declare candidacy transaction".
+
+    *Data field contents:*
+
+    ```go
+    type SetCandidateOnData struct {
+        PubKey []byte
+    }
+    ```
+
+    **PubKey** - Public key of a validator.
+
+    ## Set candidate offline transaction
+
+    Type: **0x0B**
+
+    Transaction for turning candidate off. This transaction should be sent from address which is set in the "Declare candidacy transaction".
+
+    *Data field contents:*
+
+    ```go
+    type SetCandidateOffData struct {
+        PubKey []byte
+    }
+    ```
+
+    **PubKey** - Public key of a validator.
+
+    ## Create multisig address
+
+    Type: **0x0C**
+
+    Transaction for creating multisignature address.
+
+    *Data field contents:*
+
+    ```go
+    type CreateMultisigData struct {
+        Threshold uint
+        Weights   []uint
+        Addresses [][20]byte
+    }
+    ```
+
+    ## Multisend transaction
+
+    Type: **0x0D**
+
+    Transaction for sending coins to multiple addresses. *MultisendData can contain only 100 items. Therefore, this type of transaction has a limit of 100 recipent addresses.*
+
+    *Data field contents:*
+
+    ```go
+    type MultisendData struct {
+        List []MultisendDataItem
+    }
+
+    type MultisendDataItem struct {
+        Coin  [10]byte
+        To    [20]byte
+        Value *big.Int
+    }
+    ```
+
+    ## Edit candidate transaction
+
+    Type: **0x0E**
+
+    Transaction for editing existing candidate
+
+    *Data field contents:*
+
+    ```go
+    type EditCandidateData struct {
+        PubKey           []byte
+        RewardAddress    [20]byte
+        OwnerAddress     [20]byte
+    }
+    ```
+
+    # Minter Check
+
+    Minter Check is like an ordinary bank check. Each user of network can
+    issue check with any amount of coins and pass it to another person.
+    Receiver will be able to cash a check from arbitrary account.
+
+    ## Introduction
+
+    Checks are prefixed with "Mc". Here is example of a Minter Check:
+
+    ```
+    Mcf89b01830f423f8a4d4e5400000000000000843b9aca00b8419b3beac2c6ad88a8bd54d2
+    4912754bb820e58345731cb1b9bc0885ee74f9e50a58a80aa990a29c98b05541b266af99d3
+    825bb1e5ed4e540c6e2f7c9b40af9ecc011ca0387fd67ec41be0f1cf92c7d0181368b4c67a
+    b07df2d2384192520d74ff77ace6a04ba0e7ad7b34c64223fe59584bc464d53fcdc7091faa
+    ee5df0451254062cfb37
+    ```
+
+    Each Minter Check has:
+    -   **Nonce** - unique "id" of the check.
+    -   **Coin Symbol** - symbol of coin.
+    -   **Value** - amount of coins.
+    -   **GasCoin** - symbol of a coin to pay fee.
+    -   **Due Block** - defines last block height in which the check can
+        be used.
+    -   **Lock** - secret to prevent hijacking.
+    -   **Signature** - signature of issuer.
+
+    ## Check hijacking protection
+
+    Minter Checks are issued offline and do not exist in blockchain before
+    "cashing". So we decided to use special passphrase to protect checks
+    from hijacking by another person in the moment of activation. Hash of
+    this passphrase is used as private key in ECDSA to prove that sender is
+    the one who owns the check.
+
+    *TODO: describe algorithm*
+
+    ## How to issue a Minter Check
+
+    For issuing Minter Check you can use our
+    [Console](https://console.minter.network).
+
+    You will need to fill a form:
+    -   **Nonce** - unique \"id\" of the check.
+    -   **Coin Symbol** - symbol of coin.
+    -   **Gas coin** - symbol of a coin to pay fee.
+    -   **Value** - amount of coins.
+    -   **Pass phrase** - secret phrase which you will pass to receiver
+        of the check.
+            
+    ## How to cash a Minter Check
+
+    To redeem a check user should have:
+    -   Check itself
+    -   Secret passphrase
+
+    After redeeming balance of user will increased instantly.
+
+    ## Commission
+
+    There is no commission for issuing a check because it done offline. In
+    the moment of cashing issuer will pay commission.
+
+    # Multisignatures
+
+    Minter has built-in support for multisignature wallets. Multisignatures,
+    or technically Accountable Subgroup Multisignatures (ASM), are signature
+    schemes which enable any subgroup of a set of signers to sign any
+    message, and reveal to the verifier exactly who the signers were.
+
+    Suppose the set of signers is of size *n*. If we validate a signature if
+    any subgroup of size *k* signs a message, this becomes what is commonly
+    reffered to as a *k* of *n* multisig in Bitcoin.
+
+    Minter Multisig Wallets has 2 main goals:
+    -   Atomic swaps with sidechains
+    -   Basic usage to manage funds within Minter Blockchain
+
+    ## Structure of multisig wallet
+
+    Each multisig wallet has:
+    -   Set of signers with corresponding weights
+    -   Threshold
+
+    Transactions from multisig wallets are proceed identically to the K of N
+    multisig in Bitcoin, except the multisig fails if the sum of the weights
+    of signatures is less than the threshold.
+
+    ## How to create multisig wallet
+
+    TO BE DESCRIBED
+
+    ## How to use multisig wallet
+
+    TO BE DESCRIBED
+
+    # Commissions
+
+    For each transaction sender should pay fee. Fees are measured in
+    "units".
+
+    1 unit = 10^15 pip = 0.001 bip.
+
+    ## Standard commissions
+
+    Here is a list of current fees:
+
+      |Type                             | Fee |
+      |---------------------------------| ---------------------|
+      |**TypeSend**                     | 10 units |
+      |**TypeSellCoin**                 | 100 units |
+      |**TypeSellAllCoin**              | 100 units |
+      |**TypeBuyCoin**                  | 100 units |
+      |**TypeCreateCoin**               | Depends on the coin symbol length |
+      |**TypeDeclareCandidacy**         | 10000 units |
+      |**TypeDelegate**                 | 200 units |
+      |**TypeUnbond**                   | 200 units |
+      |**TypeRedeemCheck**              | 30 units |
+      |**TypeSetCandidateOnline**       | 100 units |
+      |**TypeSetCandidateOffline**      | 100 units |
+      |**TypeCreateMultisig**           | 100 units |
+      |**TypeMultisend**                | 10+(n-1)*5 units |
+      |**TypeEditCandidate**            | 10000 units |
+
+    Also sender should pay extra 2 units per byte in Payload and Service
+    Data fields.
+
+    ## Special fees
+
+    To issue a coin with short name Coiner should pay extra fee. Fee is
+    depends on length of Coin Symbol.
+
+    3 letters — 1 000 000 bips\
+    4 letters — 100 000 bips\
+    5 letters — 10 000 bips\
+    6 letters — 1000 bips\
+    7-10 letters — 100 bips
+
+    # Validators
+
+    ## Introduction
+
+    The Minter Blockchain is based on Tendermint, which relies on a set of
+    validators that are responsible for committing new blocks in the
+    blockchain. These validators participate in the consensus protocol by
+    broadcasting votes which contain cryptographic signatures signed by each
+    validator's private key.
+
+    Validator candidates can bond their own coins and have coins
+    "delegated", or staked, to them by token holders. The validators are
+    determined by who has the most stake delegated to them.
+
+    Validators and their delegators will earn BIP (MNT) as rewards for
+    blocks and commissions. Note that validators can set commission on the
+    rewards their delegators receive as additional incentive.
+
+    If validators double sign or frequently offline, their staked coins
+    (including coins of users that delegated to them) can be slashed. The
+    penalty depends on the severity of the violation.
+
+    ## Requirements
+    Minimal requirements for running Validator\'s Node in testnet are:
+
+    -   4GB RAM
+    -   200GB SSD
+    -   x64 2.0 GHz 4 vCPUs
+
+    SSD disks are preferable for high transaction throughput.
+
+    Recommended:
+
+    -   4GB RAM
+    -   200GB SSD
+    -   x64 3.4 GHz 8 vCPUs
+    -   HSM
+
+    ## Validators limitations
+    Minter Network has limited number of available slots for validators.
+
+    At genesis there are `16` slots. `4` slots will be added each
+    `518,400` blocks. Maximum number of validators is `256`.
+
+    ## Rewards
+    Rewards for blocks and commissions are accumulated and proportionally
+    (based on stake value) payed once per `12 blocks` (approx 1 minute) to
+    all active validators (and their delegators).
+
+    Block rewards are configured to decrease from 333 to 0 BIP (MNT) in \~7
+    years.
+
+    Delegators receive their rewards at the same time after paying
+    commission to their validators (commission value is based on
+    validator\'s settings).
+
+    `10%` from reward going to DAO account.
+
+    `10%` from reward going to Developers.
+
+    ## Rules and fines
+
+    Validators have one main responsibility:
+    -   Be able to constantly run a correct version of the software:
+        validators need to make sure that their servers are always online
+        and their private keys are not compromised.
+
+    If a validator misbehaves, its bonded stake along with its delegators\'
+    stake and will be slashed. The severity of the punishment depends on the
+    type of fault. There are 3 main faults that can result in slashing of
+    funds for a validator and its delegators:
+
+    -   **Double signing**: If someone reports on chain A that a validator
+        signed two blocks at the same height on chain A and chain B, this
+        validator will get slashed on chain A
+    -   **Unavailability**: If a validator\'s signature has not been
+        included in the last 12 blocks, 1% of stake will get slashed and
+        validator will be turned off
+
+    Note that even if a validator does not intentionally misbehave, it can
+    still be slashed if its node crashes, looses connectivity, gets DDOSed,
+    or if its private key is compromised.
+
+    ## Becoming validator in testnet
+
+    1. Install and run Minter Full Node.
+    2. Get your validator\'s public key (`minter show_validator`).
+    3. Go to [Minter Console](https://testnet.console.minter.network/masternode/) and send 2 transactions:
+      
+      Fill and send `Declare candidacy` and `Set candidate online` forms.
+
+      1. Declare candidacy
+
+          Validators should declare their candidacy, after which users
+          can delegate and, if they so wish, unbond. Then declaring
+          candidacy validator should fill a form:
+
+          -   Address - You will receive rewards to this address and
+              will be able to on/off your validator.
+          -   Public Key - Paste public key from step 2 *(Mp\...)*.
+          -   Commission - Set commission for delegated stakes.
+          -   Coin - Enter coin of your stake (i.e. MNT).
+          -   Stake - Enter value of your stake in given coin.
+
+      2. Set candidate online
+
+          Validator is **offline** by default. When offline, validator
+          is not included in the list of Minter Blockchain validators,
+          so he is not receiving any rewards and cannot be punished
+          for low availability.
+
+          To turn your validator **on**, you should provide Public Key
+          (from step 2 *(Mp\...)*).
+
+          *Note: You should send transaction from address you choose
+          in Address field in step 3.1*
+
+    4. Done.
+
+      Now you will receive reward as long as your node is running and available.
+
+    ## DDOS protection. Sentry node architecture
+    Denial-of-service attacks occur when an attacker sends a flood of
+    internet traffic to an IP address to prevent the server at the IP
+    address from connecting to the internet.
+
+    An attacker scans the network, tries to learn the IP address of various
+    validator nodes and disconnect them from communication by flooding them
+    with traffic.
+
+    One recommended way to mitigate these risks is for validators to
+    carefully structure their network topology in a so-called sentry node
+    architecture.
+
+    Validator nodes should only connect to full-nodes they trust because
+    they operate them themselves or are run by other validators they know
+    socially. A validator node will typically run in a data center. Most
+    data centers provide direct links the networks of major cloud providers.
+    The validator can use those links to connect to sentry nodes in the
+    cloud. This shifts the burden of denial-of-service from the validator\'s
+    node directly to its sentry nodes, and may require new sentry nodes be
+    spun up or activated to mitigate attacks on existing ones.
+
+    Sentry nodes can be quickly spun up or change their IP addresses.
+    Because the links to the sentry nodes are in private IP space, an
+    internet based attacked cannot disturb them directly. This will ensure
+    validator block proposals and votes always make it to the rest of the
+    network.
+
+    It is expected that good operating procedures on that part of validators
+    will completely mitigate these threats.
+
+    ### Practical instructions
+
+    To setup your sentry node architecture you can follow the instructions
+    below:
+
+    Validators nodes should edit their `config.toml`:
+    ```toml
+        # Comma separated list of nodes to keep persistent connections to
+        # Do not add private peers to this list if you don't want them advertised
+        persistent_peers = [list of sentry nodes]
+
+        # Set true to enable the peer-exchange reactor
+        pex = false
+    ```
+
+    Sentry Nodes should edit their `config.toml`:
+    ```toml
+        # Comma separated list of peer IDs to keep private (will not be gossiped to other peers)
+        private_peer_ids = "ipaddress of validator nodes"
+    ```
+
+    # Delegator FAQ
+
+    ## What is a delegator?
+    People that cannot, or do not want to run validator operations, can
+    still participate in the staking process as delegators. Indeed,
+    validators are not chosen based on their own stake but based on their
+    total stake, which is the sum of their own stake and of the stake that
+    is delegated to them. This is an important property, as it makes
+    delegators a safeguard against validators that exhibit bad behavior. If
+    a validator misbehaves, its delegators will move their staked coins away
+    from it, thereby reducing its stake. Eventually, if a validator\'s stake
+    falls under the top addresses with highest stake, it will exit the
+    validator set.
+
+    Delegators share the revenue of their validators, but they also share
+    the risks. In terms of revenue, validators and delegators differ in that
+    validators can apply a commission on the revenue that goes to their
+    delegator before it is distributed. This commission is known to
+    delegators beforehand and cannot be changed. In terms of risk,
+    delegators\' coins can be slashed if their validator misbehaves. For
+    more, see Risks section.
+
+    To become delegators, coin holders need to send a \"Delegate
+    transaction\" where they specify how many coins they want to bond and to
+    which validator. Later, if a delegator wants to unbond part or all of
+    its stake, it needs to send an \"Unbond transaction\". From there, the
+    delegator will have to wait 30 days to retrieve its coins.
+
+    ## Directives of delegators
+    Being a delegator is not a passive task. Here are the main directives of
+    a delegator:
+    - Perform careful due diligence on validators before delegating. If a
+        validator misbehaves, part of its total stake, which includes the
+        stake of its delegators, can be slashed. Delegators should therefore
+        carefully select validators they think will behave correctly.
+    - Actively monitor their validator after having delegated. Delegators
+        should ensure that the validators they\'re delegating to behaves
+        correctly, meaning that they have good uptime, do not get hacked and
+        participate in governance. If a delegator is not satisfied with its
+        validator, it can unbond and switch to another validator.
+
+    ## Revenue
+    Validators and delegators earn revenue in exchange for their services. This revenue is given in three forms:
+    - Block rewards
+    - Transaction fees: Each transaction on the Minter Network comes with
+        transactions fees. Fees are distributed to validators and delegators
+        in proportion to their stake.
+
+    ## Validator commission
+    Each validator\'s staking pool receives revenue in proportion to its
+    total stake. However, before this revenue is distributed to delegators
+    inside the staking pool, the validator can apply a commission. In other
+    words, delegators have to pay a commission to their validators on the
+    revenue they earn.
+
+    `10%` from reward going to DAO account.
+
+    `10%` from reward going to Developers.
+
+    Lets consider a validator whose stake (i.e. self-bonded stake +
+    delegated stake) is 10% of the total stake of all validators. This
+    validator has 20% self-bonded stake and applies a commission of 10%. Now
+    let us consider a block with the following revenue:
+    - 111 Bips as block reward (after subtraction taxes of 20%)
+    - 10 Bips as transaction fees (after subtraction taxes of 20%)
+
+    This amounts to a total of 121 Bips to be distributed among all staking
+    pools.
+
+    Our validator\'s staking pool represents 10% of the total stake, which
+    means the pool obtains 12.1 bips. Now let us look at the internal
+    distribution of revenue:
+    - Commission = 10% * 80% * 12.1 bips = 0.69696 bips
+    - Validator\'s revenue = 20% * 12.1 bips + Commission = 3.11696 bips
+    - Delegators\' total revenue = 80% * 12.1 bips - Commission = 8.98304
+        bips
+
+    Then, each delegator in the staking pool can claim its portion of the
+    delegators\' total revenue.
+
+    ## Risks
+    Staking coins is not free of risk. First, staked coins are locked up,
+    and retrieving them requires a 30 days waiting period called unbonding
+    period. Additionally, if a validator misbehaves, a portion of its total
+    stake can be slashed (i.e. destroyed). This includes the stake of their
+    delegators.
+
+    There are 2 main slashing conditions:
+    - **Double signing**: If someone reports on chain A that a validator
+        signed two blocks at the same height on chain A and chain B, this
+        validator will get slashed on chain A
+    - **Unavailability**: If a validator\'s signature has not been
+        included in the last 12 blocks, 1% of stake will get slashed and
+        validator will be turned off
+
+    This is why delegators should perform careful due diligence on
+    validators before delegating. It is also important that delegators
+    actively monitor the activity of their validators. If a validator
+    behaves suspiciously or is too often offline, delegators can choose to
+    unbond from it or switch to another validator. Delegators can also
+    mitigate risk by distributing their stake across multiple validators.
+
+    # Minter SDKs
+
+    ## GO SDK
+    -   [minter-go-sdk](https://github.com/MinterTeam/minter-go-sdk) – a
+        pure GO SDK for working with Minter blockchain
+        
+    ## JavaScript SDK
+    -   [minter-js-sdk](https://github.com/MinterTeam/minter-js-sdk) –
+        communicate with the Minter blockchain through its API
+    -   [minterjs-wallet](https://github.com/MinterTeam/minterjs-wallet) –
+        BIP0032 HD Wallet implementation
+    -   [minterjs-tx](https://github.com/MinterTeam/minterjs-tx) – create,
+        manipulate and sign Minter transactions
+    -   [minterjs-util](https://github.com/MinterTeam/minterjs-util) – a
+        collection of utility functions for Minter
+
+    ## iOS SDK
+    -   [minter-ios-core](https://github.com/MinterTeam/minter-ios-core) –
+        create, manipulate and sign Minter transactions
+    -   [minter-ios-explorer](https://github.com/MinterTeam/minter-ios-explorer)
+        – communicate with the Minter blockchain through Explorer
+    -   [minter-ios-my](https://github.com/MinterTeam/minter-ios-my) –
+        communicate with the my.minter user database
+
+    ## PHP SDK
+    -   [minter-php-sdk](https://github.com/MinterTeam/minter-php-sdk) – a
+        pure PHP SDK for working with Minter blockchain
+
+    ## Android SDK
+    -   [minter-android-core](https://github.com/MinterTeam/minter-android-core) -
+        foundation for all Minter blockchain operations
+    -   [minter-android-blockchain](https://github.com/MinterTeam/minter-android-blockchain) -
+        operate with Minter transactions using this sdk
+    -   [minter-android-explorer](https://github.com/MinterTeam/minter-android-explorer) -
+        communicate with the Minter blockchain through the Explorer
+
+
+    ## C++ SDK
+    - [cpp-minter](https://github.com/MinterTeam/cpp-minter) - build and sign any transaction, generate mnemonic with private and public key
+
+    # Other public services
+    ## Explorer API
+
+      [Documentation](https://app.swaggerhub.com/apis-docs/GrKamil/minter-explorer_api)
+
+      Testnet base url: https://explorer-api.testnet.minter.network/api/
+
+      Mainnet base url: https://explorer-api.minter.network/api/
+
+    ## Gate API
+      Minter Gate is a service which provides to clients publish prepared transactions to the Minter Network
+
+      [Documentation](https://minterteam.github.io/minter-gate-docs/#section/Introduction)
+
+      Testnet base url: https://gate-api.testnet.minter.network/api/
+
+      Mainnet base url: https://gate-api.minter.network/api/
+tags:
+  - name: Node API
+servers:
+  - url: 'https://minter-node-1.testnet.minter.network:8841/'
+    description: Minter Team testnet server
+components:
+  responses:
+    Error:
+      description: RPC error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              jsonrpc:
+                type: string
+                example: '2.0'
+              id:
+                type: string
+                example: ''
+              error:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: -32602
+                    description: General error code
+                  message:
+                    type: string
+                    example: Invalid params
+                    description: Short description of an error
+                  data:
+                    type: string
+                    example: 'Error converting http params to arguments: invalid character looking for beginning of value'
+                    description: Full description of an error
+  schemas:
+    EventsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            events:
+              type: array
+              items:
+                anyOf:
+                  - $ref: '#/components/schemas/RewardEvent'
+                  - $ref: '#/components/schemas/SlashEvent'
+                  - $ref: '#/components/schemas/CoinLiquidationEvent'
+    RewardEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          example: minter/RewardEvent
+        value:
+          type: object
+          properties:
+            role:
+              type: string
+              example: DAO
+            address:
+              type: string
+              example: Mxee81347211c72524338f9680072af90744333146
+            amount:
+              type: string
+              example: '99470365861103987235'
+            validator_pub_key:
+              type: string
+              example: Mpb54df5b1abc46ecdb08935d6fc2f4526eba27caf1b6f2f87b3477ef3119bc0fd
+    SlashEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          example: minter/SlashEvent
+        value:
+          type: object
+          properties:
+            coin:
+              type: string
+              example: MNT
+            address:
+              type: string
+              example: Mxee81347211c72524338f9680072af90744333146
+            amount:
+              type: string
+              example: '99470365861103987235'
+            validator_pub_key:
+              type: string
+              example: Mpb54df5b1abc46ecdb08935d6fc2f4526eba27caf1b6f2f87b3477ef3119bc0fd
+    CoinLiquidationEvent:
+      type: object
+      properties:
+        type:
+          type: string
+          example: minter/CoinLiquidationEvent
+        value:
+          type: object
+          properties:
+            coin:
+              type: string
+              example: ABC
+    MaxGasResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: string
+          example: '100000'
+    MinGasResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: string
+          example: '1'
+    AddressResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            balance:
+              type: object
+              description: Map of address' balances
+              minProperties: 1
+              properties:
+                MNT:
+                  type: string
+                  example: '10000000000000000000'
+            transaction_count:
+              type: integer
+              example: 1
+    BlockResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            hash:
+              type: string
+              example: 129ABDC2A6396C38D4FF60DFE2850E8A88046744FDBA9B76ABFA752A11F16AA1
+            height:
+              type: string
+              example: '1'
+            time:
+              type: string
+              example: '2018-12-24T13:04:19.45937898Z'
+            num_txs:
+              type: string
+              example: '1'
+            total_txs:
+              type: string
+              example: '1'
+            transactions:
+              type: array
+              items:
+                anyOf:
+                  - $ref: '#/components/schemas/SendTx'
+                  - $ref: '#/components/schemas/SellCoinTx'
+                  - $ref: '#/components/schemas/SellAllCoinTx'
+                  - $ref: '#/components/schemas/BuyCoinTx'
+                  - $ref: '#/components/schemas/CreateCoinTx'
+                  - $ref: '#/components/schemas/DeclareCandidacyTx'
+                  - $ref: '#/components/schemas/DelegateTx'
+                  - $ref: '#/components/schemas/UnbondTx'
+                  - $ref: '#/components/schemas/RedeemCheckTx'
+                  - $ref: '#/components/schemas/SetCandidateOffTx'
+                  - $ref: '#/components/schemas/SetCandidateOnTx'
+                  - $ref: '#/components/schemas/CreateMultisigTx'
+                  - $ref: '#/components/schemas/MultisendTx'
+                  - $ref: '#/components/schemas/EditCandidateTx'
+            block_reward:
+              type: string
+              example: '333000000000000000000'
+            size:
+              type: string
+              example: '1352'
+            proposer:
+              type: string
+              example: Mp4ae1ee73e6136c85b0ca933a9a1347758a334885f10b3238398a67ac2eb153b8
+            validators:
+              type: array
+              items:
+                type: object
+                properties:
+                  pub_key:
+                    type: string
+                    example: Mp738da41ba6a7b7d69b7294afa158b89c5a1b410cbf0c2443c85c5fe24ad1dd1c
+                  signed:
+                    type: boolean
+                    example: true
+    BlockNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Block not found
+              description: Short description of an error
+            data:
+              type: string
+              example: Height must be less than or equal to the current blockchain height
+              description: Full description of an error
+    TransactionResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/SendTx'
+            - $ref: '#/components/schemas/SellCoinTx'
+            - $ref: '#/components/schemas/SellAllCoinTx'
+            - $ref: '#/components/schemas/BuyCoinTx'
+            - $ref: '#/components/schemas/CreateCoinTx'
+            - $ref: '#/components/schemas/DeclareCandidacyTx'
+            - $ref: '#/components/schemas/DelegateTx'
+            - $ref: '#/components/schemas/UnbondTx'
+            - $ref: '#/components/schemas/RedeemCheckTx'
+            - $ref: '#/components/schemas/SetCandidateOffTx'
+            - $ref: '#/components/schemas/SetCandidateOnTx'
+            - $ref: '#/components/schemas/CreateMultisigTx'
+            - $ref: '#/components/schemas/MultisendTx'
+            - $ref: '#/components/schemas/EditCandidateTx'
+    TransactionsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: array
+          items:
+            type: object
+            anyOf:
+              - $ref: '#/components/schemas/SendTx'
+              - $ref: '#/components/schemas/SellCoinTx'
+              - $ref: '#/components/schemas/SellAllCoinTx'
+              - $ref: '#/components/schemas/BuyCoinTx'
+              - $ref: '#/components/schemas/CreateCoinTx'
+              - $ref: '#/components/schemas/DeclareCandidacyTx'
+              - $ref: '#/components/schemas/DelegateTx'
+              - $ref: '#/components/schemas/UnbondTx'
+              - $ref: '#/components/schemas/RedeemCheckTx'
+              - $ref: '#/components/schemas/SetCandidateOffTx'
+              - $ref: '#/components/schemas/SetCandidateOnTx'
+              - $ref: '#/components/schemas/CreateMultisigTx'
+              - $ref: '#/components/schemas/MultisendTx'
+              - $ref: '#/components/schemas/EditCandidateTx'
+    SendTransactionResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 0
+            data:
+              type: string
+              example: ''
+            log:
+              type: string
+              example: ''
+            hash:
+              type: string
+              example: B8B2DA0955773B3CB7F86EFC2137A23CE98E5791D59071BA4BB9EF9DFB9D4014
+    SendTransactionErrorResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 412
+              description: General error code
+            message:
+              type: string
+              example: Check tx error
+              description: Short description of an error
+            tx_result:
+              type: object
+              properties:
+                code:
+                  type: integer
+                  example: 101
+                  description: Tx error code
+                log:
+                  type: string
+                  description: Full description of tx checking error
+                  example: 'Unexpected nonce. Expected: 1, got 2.'
+    BuyCoinTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 4
+        data:
+          type: object
+          properties:
+            coin_to_sell:
+              type: string
+              example: MNT
+            coin_to_buy:
+              type: string
+              example: ABC
+            value_to_buy:
+              type: string
+              example: '100000000000000000000'
+            maximum_value_to_sell:
+              type: string
+              example: '100000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.coin_to_sell:
+              type: string
+              example: MNT
+            tx.coin_to_buy:
+              type: string
+              example: ABC
+            tx.type:
+              type: string
+              example: '04'
+            tx.return:
+              type: string
+              example: '1230000000'
+    CandidateResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            reward_address:
+              type: string
+              example: Mx190fd0ad9fce4878ff7a6776a2692114e9838a34
+            owner_address:
+              type: string
+              example: Mx190fd0ad9fce4878ff7a6776a2692114e9838a34
+            total_stake:
+              type: string
+              example: '209369045801925559657593'
+            pub_key:
+              type: string
+              example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
+            commission:
+              type: string
+              example: '10'
+            stakes:
+              type: array
+              items:
+                type: object
+                properties:
+                  owner:
+                    type: string
+                    example: Mx190fd0ad9fce4878ff7a6776a2692114e9838a34
+                  coin:
+                    type: string
+                    example: MNT
+                  value:
+                    type: string
+                    example: '1000000000000000000'
+                  bip_value:
+                    type: string
+                    example: '1000000000000000000'
+            created_at_block:
+              type: string
+              example: '10'
+            status:
+              type: integer
+              enum:
+                - 1
+                - 2
+              example: 1
+    CandidateNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Candidate not found
+              description: Short description of an error
+    ValidatorNotFoundResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+              example: 404
+              description: General error code
+            message:
+              type: string
+              example: Validator not found
+              description: Short description of an error
+    CandidatesResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              reward_address:
+                type: string
+                example: Mx190fd0ad9fce4878ff7a6776a2692114e9838a34
+              owner_address:
+                type: string
+                example: Mx190fd0ad9fce4878ff7a6776a2692114e9838a34
+              total_stake:
+                type: string
+                example: '209369045801925559657593'
+              pub_key:
+                type: string
+                example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
+              commission:
+                type: string
+                example: '10'
+              created_at_block:
+                type: string
+                example: '10'
+              status:
+                type: integer
+                enum:
+                  - 1
+                  - 2
+                example: 1
+    ValidatorsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: array
+          items:
+            type: object
+            properties:
+              pub_key:
+                type: string
+                example: Mpc5b635cde82f796d1f8320efb8ec634f443e6b533a973570e4b5ea04aa44e96d
+              voting_power:
+                type: string
+                example: '10'
+    CoinInfoResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            name:
+              type: string
+              example: ABC Coin
+            symbol:
+              type: string
+              example: ABC
+            volume:
+              type: string
+              example: '209369045801925559657593'
+            crr:
+              type: string
+              example: '50'
+            reserve_balance:
+              type: string
+              example: '209369045801925559657593'
+            max_supply:
+              type: string
+              example: '1000000000000000000000000000000000'
+    CreateCoinTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 5
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+              example: ABC coin
+            symbol:
+              type: string
+              example: ABC
+            initial_amount:
+              type: string
+              example: '100000000000000000000'
+            initial_reserve:
+              type: string
+              example: '100000000000000000000'
+            constant_reserve_ratio:
+              type: string
+              example: '40'
+            max_supply:
+              type: string
+              example: '100000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '05'
+            tx.coin:
+              type: string
+              example: ABC
+    CreateMultisigTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 12
+        data:
+          type: object
+          properties:
+            threshold:
+              type: string
+              example: '10'
+            weights:
+              type: array
+              items:
+                type: string
+                example: '1'
+            addresses:
+              type: array
+              items:
+                type: string
+                example: Mx184ac726059e43643e67290666f7b3195093f870
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '12'
+    DeclareCandidacyTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 6
+        data:
+          type: object
+          properties:
+            address:
+              type: string
+              example: Mx184ac726059e43643e67290666f7b3195093f870
+            pub_key:
+              type: string
+              example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+            commission:
+              type: string
+              example: '10'
+            coin:
+              type: string
+              example: MNT
+            stake:
+              type: string
+              example: '1000000000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '06'
+    DelegateTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 7
+        data:
+          type: object
+          properties:
+            pub_key:
+              type: string
+              example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+            coin:
+              type: string
+              example: MNT
+            value:
+              type: string
+              example: '1000000000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '07'
+    EditCandidateTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 14
+        data:
+          type: object
+          properties:
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  pub_key:
+                    type: string
+                    example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+                  reward_address:
+                    type: string
+                    example: Mx184ac726059e43643e67290666f7b3195093f870
+                  owner_address:
+                    type: string
+                    example: Mx184ac726059e43643e67290666f7b3195093f870
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '14'
+    EstimateCoinBuyResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            will_pay:
+              type: string
+              example: '209369045801925559657593'
+            commission:
+              type: string
+              example: '209369045801925559657593'
+    EstimateCoinSellResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            will_get:
+              type: string
+              example: '209369045801925559657593'
+            commission:
+              type: string
+              example: '209369045801925559657593'
+    EstimateCoinSellAllResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            will_get:
+              type: string
+              example: '209369045801925559657593'
+    EstimateTxCommissionResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            commission:
+              type: string
+              example: '209369045801925559657593'
+    MultisendTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 13
+        data:
+          type: object
+          properties:
+            list:
+              type: array
+              items:
+                type: object
+                properties:
+                  coin:
+                    type: string
+                    example: MNT
+                  to:
+                    type: string
+                    example: Mx184ac726059e43643e67290666f7b3195093f870
+                  value:
+                    type: string
+                    example: '100000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '13'
+    RedeemCheckTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 9
+        data:
+          type: object
+          properties:
+            raw_check:
+              type: string
+              example: Mc9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+            proof:
+              type: string
+              example: 9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: 09
+    SellAllCoinTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 3
+        data:
+          type: object
+          properties:
+            coin_to_sell:
+              type: string
+              example: MNT
+            coin_to_buy:
+              type: string
+              example: ABC
+            minimum_value_to_buy:
+              type: string
+              example: '100000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.coin_to_sell:
+              type: string
+              example: MNT
+            tx.coin_to_buy:
+              type: string
+              example: ABC
+            tx.type:
+              type: string
+              example: '03'
+            tx.return:
+              type: string
+              example: '1230000000'
+            tx.sell_amount:
+              type: string
+              example: '1230000000'
+    SellCoinTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 2
+        data:
+          type: object
+          properties:
+            coin_to_sell:
+              type: string
+              example: MNT
+            coin_to_buy:
+              type: string
+              example: ABC
+            value_to_sell:
+              type: string
+              example: '100000000000000000000'
+            minimum_value_to_buy:
+              type: string
+              example: '100000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.coin_to_sell:
+              type: string
+              example: MNT
+            tx.coin_to_buy:
+              type: string
+              example: ABC
+            tx.type:
+              type: string
+              example: '02'
+            tx.return:
+              type: string
+              example: '1230000000'
+    SendTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 1
+        data:
+          type: object
+          properties:
+            coin:
+              type: string
+              example: MNT
+            to:
+              type: string
+              example: Mx184ac726059e43643e67290666f7b3195093f870
+            value:
+              type: string
+              example: '100000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.to:
+              type: string
+              example: c22d7a6273fd2bbf03884038e3d99571d746ac7e
+            tx.coin:
+              type: string
+              example: MNT
+            tx.type:
+              type: string
+              example: '01'
+    SetCandidateOffTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 11
+        data:
+          type: object
+          properties:
+            pub_key:
+              type: string
+              example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '11'
+    SetCandidateOnTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 10
+        data:
+          type: object
+          properties:
+            pub_key:
+              type: string
+              example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: '10'
+    StatusResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            version:
+              type: string
+              example: 0.9.5-a8c56270
+            latest_block_hash:
+              type: string
+              example: 9B3659F6F24F30EF491B3CF239B2E3E87A625096B29DA6F55EBA6B38BF5BEE07
+            latest_app_hash:
+              type: string
+              example: CB511A789FB49BDE67DE6F4A8189A80E9614569D0134FC6258556DF40B4B8E80
+            latest_block_height:
+              type: string
+              example: '359793'
+            latest_block_time:
+              type: string
+              example: '2019-01-15T10:57:13.579973521Z'
+            state_history:
+              type: string
+              enum:
+                - 'on'
+                - 'off'
+              example: 'off'
+            tm_status:
+              type: object
+              properties:
+                node_info:
+                  type: object
+                  properties:
+                    protocol_version:
+                      type: object
+                      properties:
+                        p2p:
+                          type: string
+                          example: '5'
+                        block:
+                          type: string
+                          example: '8'
+                        app:
+                          type: string
+                          example: '1'
+                    id:
+                      type: string
+                      example: 647e32df3b9c54809b5aca2877d9ba60900bc2d9
+                    listen_addr:
+                      type: string
+                      example: 'tcp://0.0.0.0:26656'
+                    network:
+                      type: string
+                      example: minter-test-network-28
+                    version:
+                      type: string
+                      example: 0.27.4
+                    channels:
+                      type: string
+                      example: '4020212223303800'
+                    moniker:
+                      type: string
+                      example: minter-node-1.testnet.minter.network
+                    other:
+                      type: object
+                      properties:
+                        tx_index:
+                          type: string
+                          example: 'on'
+                          enum:
+                            - 'on'
+                            - 'off'
+                        rpc_address:
+                          type: string
+                          example: 'tcp://0.0.0.0:26657'
+                sync_info:
+                  type: object
+                  properties:
+                    latest_block_hash:
+                      type: string
+                      example: 9B3659F6F24F30EF491B3CF239B2E3E87A625096B29DA6F55EBA6B38BF5BEE07
+                    latest_app_hash:
+                      type: string
+                      example: CB511A789FB49BDE67DE6F4A8189A80E9614569D0134FC6258556DF40B4B8E80
+                    latest_block_height:
+                      type: string
+                      example: '359793'
+                    latest_block_time:
+                      type: string
+                      example: '2019-01-15T10:57:13.579973521Z'
+                    catching_up:
+                      type: boolean
+                      example: false
+                validator_info:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      example: F4935E4169DD647F11E9E01EFB04779D3AC3AA9B
+                    pub_key:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          example: tendermint/PubKeyEd25519
+                        value:
+                          type: string
+                          example: SuHuc+YTbIWwypM6mhNHdYozSIXxCzI4OYpnrC6xU7g=
+                    voting_power:
+                      type: string
+                      example: '0'
+    UnbondTx:
+      type: object
+      properties:
+        hash:
+          type: string
+          example: 6D94F757237A5AB007191349E327D342AF45B38332CC65CB3780AD83E627F22E
+        raw_tx:
+          type: string
+          example: f886821b9d018a4d4e540000000000000001abea8a4d4e540000000000000094c22d7a6273fd2bbf03884038e3d99571d746ac7e89056bc75e2d63100000808001b845f8431ca0b37eb53ec1c68aedc3e47e9c510bba14ff7fec47d0c08a39e518c287c25252bca030275aad807be5a624ee014757f850232e527b41997f54f8aa5a7584b26418c6
+        from:
+          type: string
+          example: Mx184ac726059e43643e67290666f7b3195093f870
+        nonce:
+          type: string
+          example: '7069'
+        gas_price:
+          type: string
+          example: '1'
+        type:
+          type: integer
+          example: 8
+        data:
+          type: object
+          properties:
+            pub_key:
+              type: string
+              example: Mp9d62d3d3892be2a8b924759530f585039c58cb3c9fb44890abc2433122748f02
+            coin:
+              type: string
+              example: MNT
+            stake:
+              type: string
+              example: '1000000000000000000000000'
+        payload:
+          type: string
+          example: payload
+        service_data:
+          type: string
+          example: service data
+        gas:
+          type: string
+          example: '10'
+        gas_coin:
+          type: string
+          example: MNT
+        tags:
+          type: object
+          properties:
+            tx.from:
+              type: string
+              example: 184ac726059e43643e67290666f7b3195093f870
+            tx.type:
+              type: string
+              example: 08
+    UnconfirmedTxsResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            n_txs:
+              type: string
+              example: '1'
+            txs:
+              type: array
+              items:
+                type: string
+                example: +JKCC9cBik1OVAAAAAAAAAAHt/agjwU/OALTP15wkrsBypmud2BvT691nHJWDV7mm44ZGlaKTU5UAAAAAAAAAIlSO1qu0qGWxiyAgAG4RfhDG6A1ZJqmHzkcTzLjLiFgWxf1MmnaU9uu7VCTcU/r819wraBZjjl3J+SQ2lAV07OrGoJ2Itc9sFJurRTgj/n2p5c8UA==
+    MissedBlocksResponse:
+      type: object
+      properties:
+        jsonrpc:
+          type: string
+          example: '2.0'
+        id:
+          type: string
+          example: ''
+        result:
+          type: object
+          properties:
+            missed_blocks:
+              type: string
+              example: ________________________
+            missed_blocks_count:
+              type: string
+              example: '0'
+paths:
+  /address:
+    get:
+      summary: Address
+      description: Get balance and transaction count of given address
+      operationId: address
+      tags:
+        - Node API
+      parameters:
+        - name: address
+          in: query
+          description: 'Minter Address, starts with Mx...'
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainAccountRepository repository = MinterBlockChainApi.getInstance().account();
+            Call<BCResult<Balance>> request = repository.getBalance("Mx618ed05277e7568ee943cd1b8e22ced4cf873f95");
+
+            request.enqueue(new Callback<BCResult<Balance>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<Balance>> call, @Nonnull Response<BCResult<Balance>> response) {
+                    BCResult<Balance> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<Balance>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            // Get balance
+            try {
+                $response = $api->getBalance('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+
+            // Get nonce of address
+            try {
+                $response = $api->getNonce('Mx618ed05277e7568ee943cd1b8e22ced4cf873f95');
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "\nimport MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/api/\")\n\nlet accountManager = AccountManager.default\n\naccountManager.address(\"Mx618ed05277e7568ee943cd1b8e22ced4cf873f95\") { [weak self] (resp, error) in\n\tprint(resp)\n\tprint(error)\n}\n"
+  /block:
+    get:
+      summary: Block
+      description: Get information about given block
+      operationId: block
+      tags:
+        - Node API
+      parameters:
+        - name: height
+          in: query
+          description: Block height
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockResponse'
+        '404':
+          description: Block not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainBlockRepository repository = MinterBlockChainApi.getInstance().block();
+            Call<BCResult<BlockInfo>> request = repository.getByHeight(1);
+
+            request.enqueue(new Callback<BCResult<BlockInfo>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<BlockInfo>> call, @Nonnull Response<BCResult<BlockInfo>> response) {
+                    BCResult<BlockInfo> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<BlockInfo>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $height = 1;
+                $response = $api->getBlock($height);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = BlockManager.default\n\nmanager.blocks(height: \"1\") { blocks, error in\n\tprint(blocks)\n\tprint(error)\n}\n"
+  /candidate:
+    get:
+      summary: Candidate
+      description: Get information about candidate
+      operationId: candidate
+      tags:
+        - Node API
+      parameters:
+        - name: pub_key
+          in: query
+          description: Public key of a candidate
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateResponse'
+        '404':
+          description: Candidate not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainCandidateRepository repository = MinterBlockChainApi.getInstance().candidate();
+
+            // Get candidate by Public Key
+            Call<BCResult<CandidateItem>> requestByPubKey = repository.getCandidate(new MinterPublicKey("Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0"));
+
+            requestByPubKey.enqueue(new Callback<BCResult<CandidateItem>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Response<BCResult<CandidateItem>> response) {
+                    BCResult<CandidateItem> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<CandidateItem>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $publicKey = 'Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0';
+                $response = $api->getCandidate($publicKey);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = CandidateManager.default\n\nmanager.candidate(publicKey: \"Mpb52951425d2517504f767215ca77a9be3e0cd788fd72443da9b174fc686a37f0\", completion: { (response, error) in\n\tprint(response)\n\tprint(error)\n})\n"
+  /candidates:
+    get:
+      summary: Candidates
+      description: Get information about candidates
+      operationId: candidates
+      tags:
+        - Node API
+      parameters:
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+        - name: include_stakes
+          in: query
+          description: Include candidate stakes
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidatesResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainCandidateRepository repository = MinterBlockChainApi.getInstance().candidate();
+
+            // Get candidate by public key
+            Call<BCResult<List<CandidateStatus>>> request = repository.getBlockCandidates(100);
+
+            request.enqueue(new Callback<BCResult<List<CandidateStatus>>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<List<CandidateStatus>>> call, @Nonnull Response<BCResult<List<CandidateStatus>>> response) {
+                    BCResult<List<CandidateStatus>> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<List<CandidateStatus>>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $height = 1; // optional, should be positive integer or null
+                $response = $api->getCandidates($height);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = CandidateManager.default\n\nmanager.candidates(height: \"1\", completion: { (response, error) in\n\tprint(response)\n\tprint(error)\n})\n"
+  /coin_info:
+    get:
+      summary: Coin Info
+      description: Get information about coin
+      operationId: coin
+      tags:
+        - Node API
+      parameters:
+        - name: symbol
+          in: query
+          description: Coin symbol
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CoinInfoResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
+            Call<BCResult<Coin>> request = repository.getCoinInfo("TESTCOIN");
+
+            request.enqueue(new Callback<BCResult<Coin>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<Coin>> call, @Nonnull Response<BCResult<Coin>> response) {
+                    BCResult<Coin> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<Coin>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+             
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $coinSymbol = 'TESTCOIN';
+                $response = $api->getCoinInfo($coinSymbol);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = CoinManager.default\n\nself.manager?.info(symbol: \"TESTCOIN\", completion: { (coin, error) in\n\tprint(coin)\n\tprint(error)\n})\n"
+  /estimate_coin_buy:
+    get:
+      summary: Estimate Buy Coin
+      description: Estimate Buy Coin operation
+      operationId: estimate_coin_buy
+      tags:
+        - Node API
+      parameters:
+        - name: coin_to_sell
+          in: query
+          description: Coin symbol to sell
+          required: true
+          schema:
+            type: string
+        - name: coin_to_buy
+          in: query
+          description: Coin symbol to buy
+          required: true
+          schema:
+            type: string
+        - name: value_to_buy
+          in: query
+          description: Value to buy
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateCoinBuyResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
+            Call<BCResult<ExchangeBuyValue>> request = repository.getCoinExchangeCurrencyToBuy(
+                    "MNT",
+                    new BigDecimal("10"),
+                    "TESTCOIN");
+
+            request.enqueue(new Callback<BCResult<ExchangeBuyValue>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<ExchangeBuyValue>> call, @Nonnull Response<BCResult<ExchangeBuyValue>> response) {
+                    BCResult<ExchangeBuyValue> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<ExchangeBuyValue>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: JavaScript
+          source: |
+            import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
+
+            const minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});
+
+            minterSDK.estimateCoinBuy({
+                    coinToSell: 'MNT',
+                    valueToBuy: 1,
+                    coinToBuy: 'ASDCOIN',
+                })
+                .then((estimateResult) => {
+                    console.log(estimateResult.will_pay);
+                    console.log(estimateResult.commission);
+                })
+                .catch((error) => {
+                    const errorMessage = error.response.data.error.message;
+                    console.log(errorMessage);
+                });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $coinToSell = 'TESTCOIN';
+                $coinToBuy = 'MNT';
+                $valueToBuy = '10.5';
+
+                $response = $api->estimateCoinBuy($coinToSell, $valueToBuy, $coinToBuy);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.estimateCoinBuy(from: \"MNT\", to: \"TESTBOT\", amount: Decimal(string: \"10000000000\")!, completion: { (willPay, commission, error) in\n\tprint(willPay)\n\tprint(commission)\n\tprint(error)\n})\n"
+  /estimate_coin_sell_all:
+    get:
+      summary: Estimate Sell all Coin
+      description: Estimate Sell all Coin operation
+      operationId: estimate_coin_sell_all
+      tags:
+        - Node API
+      parameters:
+        - name: coin_to_sell
+          in: query
+          description: Coin symbol to sell
+          required: true
+          schema:
+            type: string
+        - name: coin_to_buy
+          in: query
+          description: Coin symbol to buy
+          required: true
+          schema:
+            type: string
+        - name: value_to_sell
+          in: query
+          description: Value to sell
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateCoinSellAllResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /estimate_coin_sell:
+    get:
+      summary: Estimate Sell Coin
+      description: Estimate Sell Coin operation
+      operationId: estimate_coin_sell
+      tags:
+        - Node API
+      parameters:
+        - name: coin_to_sell
+          in: query
+          description: Coin symbol to sell
+          required: true
+          schema:
+            type: string
+        - name: coin_to_buy
+          in: query
+          description: Coin symbol to buy
+          required: true
+          schema:
+            type: string
+        - name: value_to_sell
+          in: query
+          description: Value to sell
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateCoinSellResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainCoinRepository repository = MinterBlockChainApi.getInstance().coin();
+            Call<BCResult<ExchangeSellValue>> request = repository.getCoinExchangeCurrencyToSell(
+                    "MNT",
+                    new BigDecimal("10"),
+                    "TESTCOIN");
+
+            request.enqueue(new Callback<BCResult<ExchangeSellValue>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<ExchangeSellValue>> call, @Nonnull Response<BCResult<ExchangeSellValue>> response) {
+                    BCResult<ExchangeSellValue> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<ExchangeSellValue>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: JavaScript
+          source: |
+            import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
+
+            const minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});
+
+            minterSDK.estimateCoinSell({
+                    coinToSell: 'MNT',
+                    valueToSell: 1,
+                    coinToBuy: 'ASDCOIN',
+                })
+                .then((estimateResult) => {
+                    console.log(estimateResult.will_get);
+                    console.log(estimateResult.commission);
+                })
+                .catch((error) => {
+                    const errorMessage = error.response.data.error.message;
+                    console.log(errorMessage);
+                });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $coinToSell = 'MNT';
+                $coinToBuy = 'TESTCOIN';
+                $valueToSell = '10.5';
+
+                $response = $api->estimateCoinSell($coinToSell, $valueToSell, $coinToBuy);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.estimateCoinSell(from: \"MNT\", to: \"VALIDATOR\", amount: Decimal(string: \"10000000000\")!, completion: { (willPay, commission, error) in\n\tprint(error)\n\tprint(willPay)\n\tprint(commission)\n})\n"
+  /estimate_tx_commission:
+    get:
+      summary: Estimate Tx Commission
+      description: Estimate tx commission
+      operationId: estimate_tx_commission
+      tags:
+        - Node API
+      parameters:
+        - name: tx
+          in: query
+          description: Raw transaction
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstimateTxCommissionResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
+
+            String sign = "..."; // signed transaction hash started without 0x
+            Call<BCResult<TransactionCommissionValue>> request = repository.getTransactionCommission("");
+
+            request.enqueue(new Callback<BCResult<TransactionCommissionValue>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<TransactionCommissionValue>> call, @Nonnull Response<BCResult<TransactionCommissionValue>> response) {
+                    BCResult<TransactionCommissionValue> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<TransactionCommissionValue>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: JavaScript
+          source: |+
+            import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
+
+            const minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});
+            const rawTx = 'f8911a018a4d4e540000000000000001aae98a4d4e5400000000000000947633980c000139dd3bd24a3f54e06474fa941e16888ac7230489e800008e637573746f6d206d6573736167658001b845f8431ca0c0716faaac63263c8c6106fa17f863eec2de60431214dd8d775147d4ed972410a05f881fb3938acf69a0a7eb761e5479fbbd60780e1db0c85a0670150eb7b070ab';
+
+            minterSDK.estimateTxCommission({
+                    transaction: rawTx,
+                })
+                .then((commission) => {
+                    console.log(commission);
+                })
+                .catch((error) => {
+                    const errorMessage = error.response.data.error.message;
+                    console.log(errorMessage);
+                });
+
+
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $tx = '0x...';
+                $response = $api->estimateTxCommission($tx);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nlet tx = \"f88313018a424c41434b434f494e0001aae98a424c41434b434f494e0094228e5a68b847d169da439ec15f727f08233a7ca6883ed6df8a5bc9f6f1808001b845f8431ca02814f29ccc1c1438532d286ce285f3897939281c36da7785ab99f76e2e5f8f91a074acc3624f466302addf4b734eeac4f977179cf1d93f7351cf74c2acda5732f1\"\n\nmanager.estimateCommission(for: tx, completion: { (comission, error) in\n\tprint(comission)\n\tprint(error)\n})\n"
+  /events:
+    get:
+      summary: Events
+      description: Get events for given height
+      operationId: events
+      tags:
+        - Node API
+      parameters:
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainEventRepository repository = MinterBlockChainApi.getInstance().event();
+
+            long blockHeight = 1;
+            Call<BCResult<EventList>> request = repository.getEvents(blockHeight);
+
+            request.enqueue(new Callback<BCResult<EventList>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<EventList>> call, @Nonnull Response<BCResult<EventList>> response) {
+                    BCResult<EventList> body = response.body();
+                    if (body.isOk()) {
+                        // EventList.RewardEvent event = body.result.events.get(0).getValue();
+                        // EventList.SlashEvent event = body.result.events.get(1).getValue();
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<EventList>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $height = 1;
+                $response = $api->getEvents($height);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = EventManager.default\n\nmanager.events(height: \"1\") { events, error in\n\tprint(events)\n\tprint(error)\n}\n"
+  /max_gas:
+    get:
+      summary: Max Gas
+      description: Maximum available gas in block
+      operationId: maxgas
+      tags:
+        - Node API
+      parameters:
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaxGasResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /min_gas_price:
+    get:
+      summary: Min gas price
+      description: Minimal gas price for block
+      operationId: mingas
+      tags:
+        - Node API
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MinGasResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /missed_blocks:
+    get:
+      summary: Missed blocks
+      description: Missed blocks
+      operationId: missed_blocks
+      tags:
+        - Node API
+      parameters:
+        - name: pub_key
+          in: query
+          description: Public key of a candidate
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissedBlocksResponse'
+        '404':
+          description: Validator not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatorNotFoundResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+  /send_transaction:
+    get:
+      summary: Send Transaction
+      description: |
+        Send Transaction to the mempool.
+        Аfter getting into the mempool the transaction need some time (~5sec) to appear in the blockchain.
+        Note: in some rare cases transaction may appear in the block with failed status, so check it by hash, to ensure that it is succeeded.
+      operationId: send_transaction
+      tags:
+        - Node API
+      parameters:
+        - name: tx
+          in: query
+          description: 'Tx to send, should start with 0x'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTransactionResponse'
+        '412':
+          description: Tx check error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendTransactionErrorResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainAccountRepository repository = MinterBlockChainApi.getInstance().account();
+
+            // build transaction with builder,
+            // see https://github.com/MinterTeam/minter-android-blockchain#2-creating-and-signing-transactions for more details
+            Transaction tx = new Transaction.Builder(new BigInteger("1"))
+                    .sendCoin()
+                    .build();
+
+            PrivateKey pk = new PrivateKey("...");
+            TransactionSign sign = tx.signSingle(pk);
+
+            Call<BCResult<TransactionSendResult>> request = repository.sendTransaction(sign);
+
+            request.enqueue(new Callback<BCResult<TransactionSendResult>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<TransactionSendResult>> call, @Nonnull Response<BCResult<TransactionSendResult>> response) {
+                    BCResult<TransactionSendResult> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<TransactionSendResult>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: JavaScript
+          source: |
+            import {Minter, SendTxParams, API_TYPE_NODE} from "minter-js-sdk";
+
+            const minterSDK = new Minter({apiType: API_TYPE_NODE, baseURL: 'https://minter-node-1.testnet.minter.network:8841'});
+            const txParams = new SendTxParams({
+                privateKey: '5fa3a8b186f6cc2d748ee2d8c0eb7a905a7b73de0f2c34c5e7857c3b46f187da',
+                address: 'Mx7633980c000139dd3bd24a3f54e06474fa941e16',
+                amount: 10,
+                coinSymbol: 'MNT',
+                feeCoinSymbol: 'ASD',
+                message: 'custom message',
+            });
+
+            minterSDK.postTx(txParams)
+                .then((txHash) => {
+                    console.log(`Tx created: ${txHash}`);
+                })
+                .catch((error) => {
+                    const errorMessage = error.response.data.error.message;
+                    console.log(errorMessage);
+                });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use Minter\SDK\MinterTx;
+            use Minter\SDK\MinterCoins\MinterSendCoinTx;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            // Construct tx
+            $tx = new MinterTx([
+                'nonce' => $api->getNonce('sender address here'),
+                'chainId' => MinterTx::TESTNET_CHAIN_ID, // or MinterTx::MAINNET_CHAIN_ID
+                'gasPrice' => 1,
+                'gasCoin' => 'MNT',
+                'type' => MinterSendCoinTx::TYPE,
+                'data' => [
+                    'coin' => 'MTN',
+                    'to' => 'receiver address here',
+                    'value' => '10'
+                ],
+                'payload' => '',
+                'serviceData' => '',
+                'signatureType' => MinterTx::SIGNATURE_SINGLE_TYPE
+            ]);
+
+            // Sign tx
+            $tx = $tx->sign('your private key');
+
+            try {
+                $response = $api->send($tx);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nlet tx = DeclareCandidacyRawTransaction(nonce: BigUInt(1), gasCoin: \"MNT\", address: \"MxAddress\", publicKey: \"MpPublicKey\", commission: BigUInt(decimal: 10.0)!, coin: \"MNT\", stake: BigUInt(decimal: 100.0)!)\n\nlet signed = RawTransactionSigner.sign(rawTx: tx, privateKey: \"Private Key String Here\")\n\nmanager.send(tx: signed!) { (res, res1, error) in\n\t\n}\n"
+  /status:
+    get:
+      summary: Status
+      description: Get overall status of Minter Node
+      operationId: status
+      tags:
+        - Node API
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainStatusRepository repository = MinterBlockChainApi.getInstance().status();
+
+            Call<BCResult<NetworkStatus>> request = repository.getNetworkStatus();
+
+            request.enqueue(new Callback<BCResult<NetworkStatus>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<NetworkStatus>> call, @Nonnull Response<BCResult<NetworkStatus>> response) {
+                    BCResult<NetworkStatus> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<NetworkStatus>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $response = $api->getStatus();
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = StatusManager.default\n\nmanager.status(with: { (response, error) in\n\tprint(response)\n\tprint(error)\n})\n"
+  /transaction:
+    get:
+      summary: Transaction
+      description: Get transaction by hash
+      operationId: transaction
+      tags:
+        - Node API
+      parameters:
+        - name: hash
+          in: query
+          description: Specify tx hash
+          required: true
+          schema:
+            type: string
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |-
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
+
+            Call<BCResult<HistoryTransaction>> request = repository.getTransaction("");
+
+            request.enqueue(new Callback<BCResult<HistoryTransaction>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<HistoryTransaction>> call, @Nonnull Response<BCResult<HistoryTransaction>> response) {
+                    BCResult<HistoryTransaction> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<HistoryTransaction>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |-
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $hash = 'Mt...';
+                $response = $api->getTransaction($hash);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.transaction(hash: \"Mtb181f0185dfbda5f6ed497581dce1bf4cbac2a427374bf45018343c7af6471b8\", completion: { (transaction, error) in\n\tprint(transaction)\n\tprint(error)\n})\n"
+  /transactions:
+    get:
+      summary: Transactions Search
+      description: Search Transactions
+      operationId: transactions
+      tags:
+        - Node API
+      parameters:
+        - name: query
+          in: query
+          description: Specify query string
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page
+          required: false
+          schema:
+            type: integer
+        - name: perPage
+          in: query
+          description: Transactions per page
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
+
+            Call<BCResult<List<HistoryTransaction>>> request = repository.getTransactions(
+                    new BlockChainTransactionRepository.TQuery()
+                            .setFrom("Mx...")
+                            .setTo("Mx...")
+            );
+
+            request.enqueue(new Callback<BCResult<List<HistoryTransaction>>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Response<BCResult<List<HistoryTransaction>>> response) {
+                    BCResult<List<HistoryTransaction>> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<List<HistoryTransaction>>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $query = '';
+                $response = $api->getTransactions($query);
+                print_r($response);
+            } catch(RequestException $exception) {
+                
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.transactions(query: \"query here\", completion: { (transactions, error) in\n\tprint(transactions)\n\tprint(error)\n})\n"
+  /unconfirmed_txs:
+    get:
+      summary: Unconfirmed Transactions
+      description: Unconfirmed Transactions
+      operationId: unconfirmed_txs
+      tags:
+        - Node API
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnconfirmedTxsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainTransactionRepository repository = MinterBlockChainApi.getInstance().transactions();
+
+            Call<BCResult<UnconfirmedTransactions>> request = repository.getUnconfirmedList();
+
+            request.enqueue(new Callback<BCResult<UnconfirmedTransactions>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Response<BCResult<UnconfirmedTransactions>> response) {
+                    BCResult<UnconfirmedTransactions> body = response.body();
+                    if (body.isOk()) {
+                        /*
+                        for(TransactionSign sign: body.result) {
+                            // do smthng with sign
+                        }
+                        */
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<UnconfirmedTransactions>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $limit = 10; // optional, should be positive integer or null
+                $response = $api->getUnconfirmedTxs($limit);
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = TransactionManager.default\n\nmanager.unconfirmedTransactions(height: \"0\", completion: { (transactions, error) in\n\tprint(transactions)\n\tprint(error)\n})\n"
+  /validators:
+    get:
+      summary: Validators
+      description: Get information about validators
+      operationId: validators
+      tags:
+        - Node API
+      parameters:
+        - name: height
+          in: query
+          description: Specify height
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page
+          required: false
+          schema:
+            type: integer
+        - name: perPage
+          in: query
+          description: Validators per page
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidatorsResponse'
+        '500':
+          $ref: '#/components/responses/Error'
+      x-code-samples:
+        - lang: Java
+          source: |
+            MinterBlockChainApi.initialize("https://minter-node-1.testnet.minter.network:8841");
+
+            BlockChainStatusRepository repository = MinterBlockChainApi.getInstance().status();
+
+            Call<BCResult<List<NetworkStatus.Validator>>> request = repository.getValidators();
+
+            request.enqueue(new Callback<BCResult<List<NetworkStatus.Validator>>>() {
+                @Override
+                public void onResponse(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Response<BCResult<List<NetworkStatus.Validator>>> response) {
+                    BCResult<List<NetworkStatus.Validator>> body = response.body();
+                    if (body.isOk()) {
+                        // do something with body.result
+                    } else {
+                        // handle error
+                    }
+                }
+
+                @Override
+                public void onFailure(@Nonnull Call<BCResult<List<NetworkStatus.Validator>>> call, @Nonnull Throwable t) {
+                    // handle error
+                }
+            });
+        - lang: PHP
+          source: |
+            <?php
+            use Minter\MinterAPI;
+            use GuzzleHttp\Exception\RequestException;
+
+            $api = new MinterAPI('https://minter-node-1.testnet.minter.network:8841');
+
+            try {
+                $response = $api->getValidators();
+                print_r($response);
+            } catch(RequestException $exception) {
+                // handle error
+            }
+        - lang: Swift
+          source: "import MinterCore\n\nMinterCoreSDK.initialize(urlString: \"https://minter-node-1.testnet.minter.network:8841/\")\n\nlet manager = ValidatorManager.default\n\nmanager.validators(with: { (validators, error) in\n\tprint(validators)\n\tprint(error)\n})\n"
